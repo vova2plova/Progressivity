@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/vitalijka10/progressivity/pkg/config"
-	"github.com/vitalijka10/progressivity/pkg/logger"
+	"github.com/vova2plova/progressivity/pkg/config"
+	"github.com/vova2plova/progressivity/pkg/logger"
 )
 
 func main() {

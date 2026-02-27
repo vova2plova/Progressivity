@@ -3,16 +3,16 @@
 Задачи разбиты по фазам. Каждая фаза — логически завершённый этап, после которого можно проверить результат.
 
 ## Фаза 0: Инициализация проекта
-- [ ] Инициализировать Go-модуль (`go mod init`)
-- [ ] Создать структуру директорий (cmd, internal, migrations, pkg, web)
-- [ ] Настроить Docker Compose (PostgreSQL 18)
-- [ ] Создать Makefile с базовыми командами (build, run, migrate, test)
-- [ ] Инициализировать Vite + React + TypeScript проект в `web/`
-- [ ] Настроить Tailwind CSS и Radix UI
-- [ ] Настроить ESLint + Prettier для frontend
-- [ ] Создать .env.example с переменными окружения
-- [ ] Настроить пакет config (чтение env/файлов конфигурации)
-- [ ] Настроить структурированное логирование (slog)
+- [x] Инициализировать Go-модуль (`go mod init`)
+- [x] Создать структуру директорий (cmd, internal, migrations, pkg, web)
+- [x] Настроить Docker Compose (PostgreSQL 18)
+- [x] Создать Makefile с базовыми командами (build, run, migrate, test)
+- [x] Инициализировать Vite + React + TypeScript проект в `web/`
+- [x] Настроить Tailwind CSS и Radix UI
+- [x] Настроить ESLint + Prettier для frontend
+- [x] Создать .env.example с переменными окружения
+- [x] Настроить пакет config (чтение env/файлов конфигурации)
+- [x] Настроить структурированное логирование (slog)
 
 ## Фаза 1: База данных и миграции
 - [ ] Написать миграцию `000001_create_users` (up/down)

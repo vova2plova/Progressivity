@@ -1,4 +1,4 @@
-module github.com/vitalijka10/progressivity
+module github.com/vova2plova/progressivity
 
 go 1.25.0
 
