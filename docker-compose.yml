@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: progressivity-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-progressivity}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-progressivity}
+      POSTGRES_DB: ${DB_NAME:-progressivity}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-progressivity}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
