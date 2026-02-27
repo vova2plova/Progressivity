@@ -1,4 +1,4 @@
 declare module 'tailwindcss' {
-  const styles: any
+  const styles: unknown
   export default styles
 }
