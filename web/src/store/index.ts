@@ -1,2 +1,3 @@
-export { MockStore } from './mock-store';
-export { StoreProvider, useStore, useTasks, useProgress } from './context';
+export { MockStore } from './mock-store'
+export { StoreProvider } from './context'
+export { useStore, useTasks, useProgress } from './hooks'

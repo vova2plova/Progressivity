@@ -6,23 +6,23 @@ import type {
   CreateTaskRequest,
   UpdateTaskRequest,
   CreateProgressRequest,
-} from '../types';
-import { TaskStatus, TaskType } from '../types';
+} from '../types'
+import { TaskStatus, TaskType } from '../types'
 
 export class MockStore {
-  private tasks: Map<UUID, Task> = new Map();
-  private progressEntries: Map<UUID, ProgressEntry> = new Map();
-  private nextTaskId = 1;
-  private nextProgressId = 1;
+  private tasks: Map<UUID, Task> = new Map()
+  private progressEntries: Map<UUID, ProgressEntry> = new Map()
+  private nextTaskId = 1
+  private nextProgressId = 1
 
   constructor() {
-    this.seed();
+    this.seed()
   }
 
   // --- Task CRUD ---
   createTask(data: CreateTaskRequest, userId: UUID): Task {
-    const id = this.generateTaskId();
-    const now = new Date().toISOString();
+    const id = this.generateTaskId()
+    const now = new Date().toISOString()
     const task: Task = {
       id,
       userId,
@@ -37,117 +37,117 @@ export class MockStore {
       deadline: data.deadline ?? null,
       createdAt: now,
       updatedAt: now,
-    };
-    this.tasks.set(id, task);
-    return task;
+    }
+    this.tasks.set(id, task)
+    return task
   }
 
   getTask(id: UUID): Task | undefined {
-    return this.tasks.get(id);
+    return this.tasks.get(id)
   }
 
   getTaskWithProgress(id: UUID): TaskWithProgress | undefined {
-    const task = this.tasks.get(id);
-    if (!task) return undefined;
+    const task = this.tasks.get(id)
+    if (!task) return undefined
 
-    const progress = this.calculateTaskProgress(id);
-    const children = this.getChildrenIds(id);
+    const progress = this.calculateTaskProgress(id)
+    const children = this.getChildrenIds(id)
     return {
       ...task,
       progress: progress * 100, // convert to percentage
-      completedChildren: children.filter(childId => {
-        const child = this.tasks.get(childId);
-        return child?.status === TaskStatus.COMPLETED;
+      completedChildren: children.filter((childId) => {
+        const child = this.tasks.get(childId)
+        return child?.status === TaskStatus.COMPLETED
       }).length,
       totalChildren: children.length,
-      children: children.map(childId => this.getTaskWithProgress(childId)!),
-    };
+      children: children.map((childId) => this.getTaskWithProgress(childId)!),
+    }
   }
 
   updateTask(id: UUID, data: UpdateTaskRequest): Task | undefined {
-    const task = this.tasks.get(id);
-    if (!task) return undefined;
+    const task = this.tasks.get(id)
+    if (!task) return undefined
 
     const updated: Task = {
       ...task,
       ...data,
       updatedAt: new Date().toISOString(),
-    };
-    this.tasks.set(id, updated);
-    return updated;
+    }
+    this.tasks.set(id, updated)
+    return updated
   }
 
   deleteTask(id: UUID): boolean {
     // cascade delete children
-    const children = this.getChildrenIds(id);
-    children.forEach(childId => this.deleteTask(childId));
+    const children = this.getChildrenIds(id)
+    children.forEach((childId) => this.deleteTask(childId))
 
     // delete progress entries for this task
-    this.getProgressEntriesByTaskId(id).forEach(entry => {
-      this.progressEntries.delete(entry.id);
-    });
+    this.getProgressEntriesByTaskId(id).forEach((entry) => {
+      this.progressEntries.delete(entry.id)
+    })
 
-    return this.tasks.delete(id);
+    return this.tasks.delete(id)
   }
 
   listRootTasks(userId: UUID): Task[] {
     return Array.from(this.tasks.values())
-      .filter(task => task.userId === userId && task.parentId === null)
-      .sort((a, b) => a.position - b.position);
+      .filter((task) => task.userId === userId && task.parentId === null)
+      .sort((a, b) => a.position - b.position)
   }
 
   listChildren(parentId: UUID | null): Task[] {
     return Array.from(this.tasks.values())
-      .filter(task => task.parentId === parentId)
-      .sort((a, b) => a.position - b.position);
+      .filter((task) => task.parentId === parentId)
+      .sort((a, b) => a.position - b.position)
   }
 
   getTaskTree(rootId: UUID): TaskWithProgress | undefined {
-    return this.getTaskWithProgress(rootId);
+    return this.getTaskWithProgress(rootId)
   }
 
   reorderTask(taskId: UUID, newPosition: number, newParentId?: UUID | null): boolean {
-    const task = this.tasks.get(taskId);
-    if (!task) return false;
+    const task = this.tasks.get(taskId)
+    if (!task) return false
 
-    const targetParentId = newParentId !== undefined ? newParentId : task.parentId;
-    const siblings = this.listChildren(targetParentId).filter(t => t.id !== taskId);
+    const targetParentId = newParentId !== undefined ? newParentId : task.parentId
+    const siblings = this.listChildren(targetParentId).filter((t) => t.id !== taskId)
 
     // update position of all siblings
-    const updatedSiblings: Task[] = [];
-    let pos = 0;
+    const updatedSiblings: Task[] = []
+    let pos = 0
     for (let i = 0; i < siblings.length + 1; i++) {
       if (pos === newPosition) {
-        pos++;
+        pos++
       }
       if (i < siblings.length) {
-        const sib = siblings[i];
+        const sib = siblings[i]
         if (sib.position !== pos) {
-          updatedSiblings.push({ ...sib, position: pos, updatedAt: new Date().toISOString() });
+          updatedSiblings.push({ ...sib, position: pos, updatedAt: new Date().toISOString() })
         }
-        pos++;
+        pos++
       }
     }
 
     // update task
-    task.position = newPosition;
-    task.parentId = targetParentId;
-    task.updatedAt = new Date().toISOString();
+    task.position = newPosition
+    task.parentId = targetParentId
+    task.updatedAt = new Date().toISOString()
 
-    updatedSiblings.forEach(t => this.tasks.set(t.id, t));
-    this.tasks.set(task.id, task);
-    return true;
+    updatedSiblings.forEach((t) => this.tasks.set(t.id, t))
+    this.tasks.set(task.id, task)
+    return true
   }
 
   // --- Progress CRUD ---
   addProgress(taskId: UUID, data: CreateProgressRequest): ProgressEntry | undefined {
-    const task = this.tasks.get(taskId);
-    if (!task) return undefined;
+    const task = this.tasks.get(taskId)
+    if (!task) return undefined
     // only leaf tasks can have progress (simplification)
-    if (task.type === TaskType.CONTAINER) return undefined;
+    if (task.type === TaskType.CONTAINER) return undefined
 
-    const id = this.generateProgressId();
-    const now = new Date().toISOString();
+    const id = this.generateProgressId()
+    const now = new Date().toISOString()
     const entry: ProgressEntry = {
       id,
       taskId,
@@ -155,76 +155,79 @@ export class MockStore {
       note: data.note ?? null,
       recordedAt: data.recordedAt ?? now,
       createdAt: now,
-    };
-    this.progressEntries.set(id, entry);
-    return entry;
+    }
+    this.progressEntries.set(id, entry)
+    return entry
   }
 
   deleteProgress(id: UUID): boolean {
-    return this.progressEntries.delete(id);
+    return this.progressEntries.delete(id)
   }
 
   getProgressEntriesByTaskId(taskId: UUID): ProgressEntry[] {
     return Array.from(this.progressEntries.values())
-      .filter(entry => entry.taskId === taskId)
-      .sort((a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime());
+      .filter((entry) => entry.taskId === taskId)
+      .sort((a, b) => new Date(a.recordedAt).getTime() - new Date(b.recordedAt).getTime())
   }
 
   // --- Progress Calculation ---
   private calculateTaskProgress(taskId: UUID): number {
-    const task = this.tasks.get(taskId);
-    if (!task) return 0;
+    const task = this.tasks.get(taskId)
+    if (!task) return 0
 
     // Leaf with target value
     if (task.targetValue !== null) {
-      const total = this.getProgressEntriesByTaskId(taskId).reduce((sum, entry) => sum + entry.value, 0);
-      return Math.min(total / task.targetValue, 1);
+      const total = this.getProgressEntriesByTaskId(taskId).reduce(
+        (sum, entry) => sum + entry.value,
+        0,
+      )
+      return Math.min(total / task.targetValue, 1)
     }
 
     // Binary leaf (no target value)
     if (task.type === TaskType.LEAF) {
-      return task.status === TaskStatus.COMPLETED ? 1 : 0;
+      return task.status === TaskStatus.COMPLETED ? 1 : 0
     }
 
     // Container: average of children's progress
-    const children = this.getChildrenIds(taskId);
-    if (children.length === 0) return 0;
+    const children = this.getChildrenIds(taskId)
+    if (children.length === 0) return 0
 
-    const childProgresses = children.map(childId => this.calculateTaskProgress(childId));
-    const sum = childProgresses.reduce((a, b) => a + b, 0);
-    return sum / children.length;
+    const childProgresses = children.map((childId) => this.calculateTaskProgress(childId))
+    const sum = childProgresses.reduce((a, b) => a + b, 0)
+    return sum / children.length
   }
 
   // --- Helper methods ---
   private generateTaskId(): UUID {
-    return `task-${this.nextTaskId++}`;
+    return `task-${this.nextTaskId++}`
   }
 
   private generateProgressId(): UUID {
-    return `progress-${this.nextProgressId++}`;
+    return `progress-${this.nextProgressId++}`
   }
 
   private getChildrenIds(parentId: UUID): UUID[] {
     return Array.from(this.tasks.values())
-      .filter(task => task.parentId === parentId)
+      .filter((task) => task.parentId === parentId)
       .sort((a, b) => a.position - b.position)
-      .map(task => task.id);
+      .map((task) => task.id)
   }
 
   private getNextPosition(parentId: UUID | null): number {
-    const siblings = Array.from(this.tasks.values()).filter(task => task.parentId === parentId);
-    if (siblings.length === 0) return 0;
-    return Math.max(...siblings.map(t => t.position)) + 1;
+    const siblings = Array.from(this.tasks.values()).filter((task) => task.parentId === parentId)
+    if (siblings.length === 0) return 0
+    return Math.max(...siblings.map((t) => t.position)) + 1
   }
 
   // --- Seed data ---
   private seed() {
-    const userId = 'user-1';
-    const now = new Date().toISOString();
-    const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const userId = 'user-1'
+    const now = new Date().toISOString()
+    const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
 
     // Goal 1: Read 10 books (container)
-    const goal1Id = this.generateTaskId();
+    const goal1Id = this.generateTaskId()
     const goal1: Task = {
       id: goal1Id,
       userId,
@@ -239,8 +242,8 @@ export class MockStore {
       deadline: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
       createdAt: monthAgo,
       updatedAt: now,
-    };
-    this.tasks.set(goal1Id, goal1);
+    }
+    this.tasks.set(goal1Id, goal1)
 
     // Sub-tasks: individual books (leaf with target pages)
     const books = [
@@ -249,9 +252,9 @@ export class MockStore {
       { title: 'Мастер и Маргарита', pages: 480 },
       { title: 'Маленький принц', pages: 96 },
       { title: 'Гордость и предубеждение', pages: 432 },
-    ];
+    ]
     books.forEach((book, idx) => {
-      const bookId = this.generateTaskId();
+      const bookId = this.generateTaskId()
       const task: Task = {
         id: bookId,
         userId,
@@ -266,21 +269,21 @@ export class MockStore {
         deadline: null,
         createdAt: monthAgo,
         updatedAt: now,
-      };
-      this.tasks.set(bookId, task);
+      }
+      this.tasks.set(bookId, task)
 
       // Add progress entries for completed books
       if (idx < 2) {
-        this.addProgress(bookId, { value: book.pages, note: 'Прочитано полностью' });
+        this.addProgress(bookId, { value: book.pages, note: 'Прочитано полностью' })
       } else if (idx === 2) {
         // Partially read
-        this.addProgress(bookId, { value: 120, note: 'Начал читать' });
-        this.addProgress(bookId, { value: 80, note: 'Продолжение' });
+        this.addProgress(bookId, { value: 120, note: 'Начал читать' })
+        this.addProgress(bookId, { value: 80, note: 'Продолжение' })
       }
-    });
+    })
 
     // Goal 2: Run 500 km (container)
-    const goal2Id = this.generateTaskId();
+    const goal2Id = this.generateTaskId()
     const goal2: Task = {
       id: goal2Id,
       userId,
@@ -295,8 +298,8 @@ export class MockStore {
       deadline: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
       createdAt: monthAgo,
       updatedAt: now,
-    };
-    this.tasks.set(goal2Id, goal2);
+    }
+    this.tasks.set(goal2Id, goal2)
 
     // Monthly sub-tasks (leaf with target km)
     const months = [
@@ -304,9 +307,9 @@ export class MockStore {
       { month: 'Февраль', km: 45 },
       { month: 'Март', km: 50 },
       { month: 'Апрель', km: 55 },
-    ];
+    ]
     months.forEach((m, idx) => {
-      const monthId = this.generateTaskId();
+      const monthId = this.generateTaskId()
       const task: Task = {
         id: monthId,
         userId,
@@ -321,19 +324,19 @@ export class MockStore {
         deadline: new Date(Date.now() + idx * 30 * 24 * 60 * 60 * 1000).toISOString(),
         createdAt: monthAgo,
         updatedAt: now,
-      };
-      this.tasks.set(monthId, task);
+      }
+      this.tasks.set(monthId, task)
 
       // Add progress entries
       if (idx < 2) {
-        this.addProgress(monthId, { value: m.km, note: 'Выполнено' });
+        this.addProgress(monthId, { value: m.km, note: 'Выполнено' })
       } else if (idx === 2) {
-        this.addProgress(monthId, { value: 30, note: 'Тренировки' });
+        this.addProgress(monthId, { value: 30, note: 'Тренировки' })
       }
-    });
+    })
 
     // Binary task (no target value)
-    const binaryId = this.generateTaskId();
+    const binaryId = this.generateTaskId()
     const binaryTask: Task = {
       id: binaryId,
       userId,
@@ -348,7 +351,7 @@ export class MockStore {
       deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       createdAt: monthAgo,
       updatedAt: now,
-    };
-    this.tasks.set(binaryId, binaryTask);
+    }
+    this.tasks.set(binaryId, binaryTask)
   }
 }
