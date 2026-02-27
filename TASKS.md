@@ -120,59 +120,59 @@
 - [ ] Написать handler-тесты с httptest
 
 ## Фаза 8: Frontend на моках — типы и in-memory store
-- [ ] Определить TypeScript-типы (`web/src/types/`)
-  - [ ] User
-  - [ ] Task, TaskWithProgress, TaskStatus
-  - [ ] ProgressEntry
-  - [ ] CreateTaskRequest, UpdateTaskRequest, CreateProgressRequest
-- [ ] Реализовать in-memory mock store (`web/src/store/mock-store.ts`)
-  - [ ] Хранилище задач и progress entries (Map или массив)
-  - [ ] CRUD-операции: createTask, updateTask, deleteTask (каскадно)
-  - [ ] getTasksByParentId, getRootTasks, getTaskTree
-  - [ ] addProgress, deleteProgress, getProgressByTaskId
-  - [ ] Рекурсивный расчёт прогресса на клиенте
-- [ ] Заполнить mock store реалистичными seed-данными
-  - [ ] Цель "Прочитать 10 книг" с несколькими книгами и progress entries
-  - [ ] Цель "Пробежать 500 км" с месячными подзадачами
-  - [ ] Бинарная задача для проверки done/not done
-- [ ] React Context для mock store с реактивными обновлениями
+- [x] Определить TypeScript-типы (`web/src/types/`)
+  - [x] User
+  - [x] Task, TaskWithProgress, TaskStatus
+  - [x] ProgressEntry
+  - [x] CreateTaskRequest, UpdateTaskRequest, CreateProgressRequest
+- [x] Реализовать in-memory mock store (`web/src/store/mock-store.ts`)
+  - [x] Хранилище задач и progress entries (Map или массив)
+  - [x] CRUD-операции: createTask, updateTask, deleteTask (каскадно)
+  - [x] getTasksByParentId, getRootTasks, getTaskTree
+  - [x] addProgress, deleteProgress, getProgressByTaskId
+  - [x] Рекурсивный расчёт прогресса на клиенте
+- [x] Заполнить mock store реалистичными seed-данными
+  - [x] Цель "Прочитать 10 книг" с несколькими книгами и progress entries
+  - [x] Цель "Пробежать 500 км" с месячными подзадачами
+  - [x] Бинарная задача для проверки done/not done
+- [x] React Context для mock store с реактивными обновлениями
 
 ## Фаза 9: Frontend на моках — UI компоненты
-- [ ] Настроить React Router (маршруты: dashboard, task/:id)
-- [ ] Создать layout с навигацией и заглушкой юзера
-- [ ] Прогресс-бар компонент (`ProgressBar`)
-  - [ ] Процент + полоска
-  - [ ] Комбинированный: "3/10 завершено, 35%"
-  - [ ] Цветовая индикация (зелёный при 100%, жёлтый в процессе)
-- [ ] Компонент карточки задачи (`TaskCard`)
-  - [ ] Title, description, status badge
-  - [ ] Progress bar или "done/not done"
-  - [ ] Unit info (если есть): "120 / 300 pages"
-  - [ ] Количество подзадач
-- [ ] Компонент дерева задач (`TaskTree`) — рекурсивный рендеринг
-- [ ] Модальное окно / форма создания задачи (`CreateTaskForm`)
-  - [ ] Title, description, unit, target_value, deadline
-  - [ ] Валидация полей
-- [ ] Модальное окно / форма редактирования задачи (`EditTaskForm`)
-- [ ] Диалог подтверждения удаления (`DeleteConfirmDialog`)
-- [ ] Форма добавления прогресса (`AddProgressForm`)
-  - [ ] Value, note, date (по умолчанию — сегодня)
-- [ ] Список записей прогресса (`ProgressHistory`)
+- [x] Настроить React Router (маршруты: dashboard, task/:id)
+- [x] Создать layout с навигацией и заглушкой юзера
+- [x] Прогресс-бар компонент (`ProgressBar`)
+  - [x] Процент + полоска
+  - [x] Комбинированный: "3/10 завершено, 35%"
+  - [x] Цветовая индикация (зелёный при 100%, жёлтый в процессе)
+- [x] Компонент карточки задачи (`TaskCard`)
+  - [x] Title, description, status badge
+  - [x] Progress bar или "done/not done"
+  - [x] Unit info (если есть): "120 / 300 pages"
+  - [x] Количество подзадач
+- [x] Компонент дерева задач (`TaskTree`) — рекурсивный рендеринг
+- [x] Модальное окно / форма создания задачи (`CreateTaskForm`)
+  - [x] Title, description, unit, target_value, deadline
+  - [x] Валидация полей
+- [x] Модальное окно / форма редактирования задачи (`EditTaskForm`)
+- [x] Диалог подтверждения удаления (`DeleteConfirmDialog`)
+- [x] Форма добавления прогресса (`AddProgressForm`)
+  - [x] Value, note, date (по умолчанию — сегодня)
+- [x] Список записей прогресса (`ProgressHistory`)
 
 ## Фаза 10: Frontend на моках — страницы
-- [ ] Страница Dashboard
-  - [ ] Список top-level задач (карточки с прогресс-барами)
-  - [ ] Кнопка "Создать цель"
-  - [ ] Empty state: "Нет целей. Создайте первую!"
-- [ ] Страница задачи (`TaskPage`)
-  - [ ] Заголовок задачи с прогрессом
-  - [ ] Дерево подзадач (рекурсивное)
-  - [ ] Кнопка "Добавить подзадачу"
-  - [ ] Панель прогресса (для leaf-задач): форма + история
-  - [ ] Редактирование / удаление задачи
-  - [ ] Изменение статуса задачи
-  - [ ] Навигация: breadcrumbs (parent -> current)
-- [ ] Проверить полный flow на моках: создать цель -> подзадачи -> добавить прогресс -> видеть обновление
+- [x] Страница Dashboard
+  - [x] Список top-level задач (карточки с прогресс-барами)
+  - [x] Кнопка "Создать цель"
+  - [x] Empty state: "Нет целей. Создайте первую!"
+- [x] Страница задачи (`TaskPage`)
+  - [x] Заголовок задачи с прогрессом
+  - [x] Дерево подзадач (рекурсивное)
+  - [x] Кнопка "Добавить подзадачу"
+  - [x] Панель прогресса (для leaf-задач): форма + история
+  - [x] Редактирование / удаление задачи
+  - [x] Изменение статуса задачи
+  - [x] Навигация: breadcrumbs (parent -> current)
+- [x] Проверить полный flow на моках: создать цель -> подзадачи -> добавить прогресс -> видеть обновление
 
 ## Фаза 11: Frontend — интеграция с Backend API
 - [ ] Настроить TanStack Query (QueryClientProvider)

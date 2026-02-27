@@ -1,4 +1,4 @@
-import { useCallback, useContext } from 'react'
+import { useCallback, useContext, useMemo } from 'react'
 import type { UUID, CreateTaskRequest, UpdateTaskRequest, CreateProgressRequest } from '../types'
 import { StoreContext } from './store-context'
 
@@ -14,7 +14,10 @@ export function useTasks() {
   const { store, refresh } = useStore()
   const userId = 'user-1' // mock user ID
 
-  const rootTasks = store.listRootTasks(userId)
+  const rootTasks = useMemo(
+    () => store.listRootTasks(userId).map((task) => store.getTaskWithProgress(task.id)!),
+    [store],
+  )
   const getTask = useCallback((id: UUID) => store.getTask(id), [store])
   const getTaskWithProgress = useCallback((id: UUID) => store.getTaskWithProgress(id), [store])
   const getChildren = useCallback((parentId: UUID) => store.listChildren(parentId), [store])
