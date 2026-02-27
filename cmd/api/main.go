@@ -55,11 +55,11 @@ func main() {
 			os.Exit(1)
 		}
 	}()
-
 	<-quit
 	log.Info("shutting down server...")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	const baseTimeout = 10
+	ctx, cancel := context.WithTimeout(context.Background(), baseTimeout*time.Second)
 
 	if err := server.Shutdown(ctx); err != nil {
 		cancel()
