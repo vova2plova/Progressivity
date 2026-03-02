@@ -15,12 +15,12 @@
 - [x] Настроить структурированное логирование (slog)
 
 ## Фаза 1: База данных и миграции
-- [ ] Написать миграцию `000001_create_users` (up/down)
-- [ ] Написать миграцию `000002_create_tasks` (up/down) — с self-reference FK
-- [ ] Написать миграцию `000003_create_progress_entries` (up/down)
+- [x] Написать миграцию `000001_create_users` (up/down)
+- [x] Написать миграцию `000002_create_tasks` (up/down) — с self-reference FK
+- [x] Написать миграцию `000003_create_progress_entries` (up/down)
 - [ ] Настроить подключение к PostgreSQL (`infrastructure/postgres/connection.go`)
-- [ ] Добавить команду миграции в Makefile (`make migrate-up`, `make migrate-down`)
-- [ ] Проверить миграции: up -> down -> up без ошибок
+- [x] Добавить команду миграции в Makefile (`make migrate-up`, `make migrate-down`)
+- [x] Проверить миграции: up -> down -> up без ошибок
 
 ## Фаза 2: Domain layer
 - [ ] Определить `User` entity (`internal/domain/user.go`)
