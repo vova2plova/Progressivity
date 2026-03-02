@@ -23,18 +23,19 @@
 - [x] Проверить миграции: up -> down -> up без ошибок
 
 ## Фаза 2: Domain layer
-- [ ] Определить `User` entity (`internal/domain/user.go`)
-- [ ] Определить `Task` entity с полями для рекурсивной структуры (`internal/domain/task.go`)
-- [ ] Определить `ProgressEntry` entity (`internal/domain/task.go`)
-- [ ] Определить `TaskWithProgress` — расширенная структура с вычисляемыми полями
-- [ ] Определить доменные ошибки (`internal/domain/errors.go`)
-- [ ] Определить интерфейс `TaskRepository` (`internal/repository/task_repository.go`)
-- [ ] Определить интерфейс `UserRepository` (`internal/repository/user_repository.go`)
+- [x] Определить `User` entity (`internal/domain/user.go`)
+- [x] Определить `Task` entity с полями для рекурсивной структуры (`internal/domain/task.go`)
+- [x] Определить `ProgressEntry` entity (`internal/domain/task.go`)
+- [x] Определить `TaskWithProgress` — расширенная структура с вычисляемыми полями
+- [x] Определить доменные ошибки (`internal/domain/errors.go`)
+- [x] Определить интерфейс `TaskRepository` (`internal/repository/task_repository.go`)
+- [x] Определить интерфейс `ProgressEntryRepository` (`internal/repository/progress_entry.go`)
+- [x] Определить интерфейс `UserRepository` (`internal/repository/user_repository.go`)
 
 ## Фаза 3: Infrastructure layer — репозитории
-- [ ] Реализовать `UserRepository` для PostgreSQL
-  - [ ] Create
-  - [ ] GetByID
+- [x] Реализовать `UserRepository` для PostgreSQL
+  - [x] Create
+  - [x] GetByID
   - [ ] GetByEmail
   - [ ] GetByUsername
 - [ ] Реализовать `TaskRepository` для PostgreSQL
