@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/vova2plova/progressivity/internal/infrastructure/postgres"
 	"github.com/vova2plova/progressivity/pkg/config"
 	"github.com/vova2plova/progressivity/pkg/logger"
 )
@@ -27,6 +28,12 @@ func main() {
 		"db_host", cfg.Database.Host,
 		"log_level", cfg.Log.Level,
 	)
+
+	db, err := postgres.InitDB(&cfg.Database)
+	if err != nil {
+		slog.Error("failed to init database", "error", err)
+		os.Exit(1)
+	}
 
 	mux := http.NewServeMux()
 
@@ -65,6 +72,10 @@ func main() {
 		cancel()
 		log.Error("server forced to shutdown", "error", err)
 		os.Exit(1)
+	}
+
+	if err := db.Close(); err != nil {
+		slog.Error("failed to close database", "error", err)
 	}
 
 	cancel()

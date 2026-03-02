@@ -18,7 +18,7 @@
 - [x] Написать миграцию `000001_create_users` (up/down)
 - [x] Написать миграцию `000002_create_tasks` (up/down) — с self-reference FK
 - [x] Написать миграцию `000003_create_progress_entries` (up/down)
-- [ ] Настроить подключение к PostgreSQL (`infrastructure/postgres/connection.go`)
+- [x] Настроить подключение к PostgreSQL (`infrastructure/postgres/connection.go`)
 - [x] Добавить команду миграции в Makefile (`make migrate-up`, `make migrate-down`)
 - [x] Проверить миграции: up -> down -> up без ошибок
 
