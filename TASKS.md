@@ -54,19 +54,19 @@
   - [x] SumByTaskID
 
 ## Фаза 4: Auth (JWT)
-- [ ] Реализовать JWT-менеджер (`infrastructure/auth/jwt.go`)
-  - [ ] GenerateAccessToken
-  - [ ] GenerateRefreshToken
-  - [ ] ValidateAccessToken
-  - [ ] ValidateRefreshToken
-- [ ] Реализовать `AuthUsecase` (`usecase/auth_usecase.go`)
-  - [ ] Register (валидация, хеширование пароля, сохранение)
-  - [ ] Login (проверка credentials, генерация токенов)
-  - [ ] Refresh (валидация refresh token, генерация новой пары)
-  - [ ] Logout (инвалидация refresh token)
-- [ ] Реализовать Auth middleware (`delivery/http/middleware/auth_middleware.go`)
-- [ ] Реализовать Auth handler (`delivery/http/handler/auth_handler.go`)
-- [ ] Определить Auth DTO (`delivery/http/dto/auth_dto.go`)
+- [x] Реализовать JWT-менеджер (`infrastructure/auth/jwt.go`)
+  - [x] GenerateAccessToken
+  - [x] GenerateRefreshToken
+  - [x] ValidateAccessToken
+  - [x] ValidateRefreshToken
+- [x] Реализовать `AuthUsecase` (`usecase/auth_usecase.go`)
+  - [x] Register (валидация, хеширование пароля, сохранение)
+  - [x] Login (проверка credentials, генерация токенов)
+  - [x] Refresh (валидация refresh token, генерация новой пары)
+  - [x] Logout (инвалидация refresh token)
+- [x] Реализовать Auth middleware (`delivery/http/middleware/auth_middleware.go`)
+- [x] Реализовать Auth handler (`delivery/http/handler/auth_handler.go`)
+- [x] Определить Auth DTO (`delivery/http/dto/auth_dto.go`)
 
 ## Фаза 5: Task Usecase
 - [ ] Реализовать `TaskUsecase` (`usecase/task_usecase.go`)
