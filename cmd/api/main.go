@@ -10,18 +10,23 @@ import (
 	"syscall"
 	"time"
 
+	delivery "github.com/vova2plova/progressivity/internal/delivery/http"
+	"github.com/vova2plova/progressivity/internal/infrastructure/auth"
 	"github.com/vova2plova/progressivity/internal/infrastructure/postgres"
+	"github.com/vova2plova/progressivity/internal/usecase"
 	"github.com/vova2plova/progressivity/pkg/config"
 	"github.com/vova2plova/progressivity/pkg/logger"
 )
 
 func main() {
+	// --- Config ---
 	cfg, err := config.Load()
 	if err != nil {
 		slog.Error("failed to load config", "error", err)
 		os.Exit(1)
 	}
 
+	// --- Logger ---
 	log := logger.New(cfg.Log.Level)
 	log.Info("starting progressivity",
 		"port", cfg.Server.Port,
@@ -29,29 +34,47 @@ func main() {
 		"log_level", cfg.Log.Level,
 	)
 
+	// --- Database ---
 	db, err := postgres.InitDB(context.Background(), &cfg.Database)
 	if err != nil {
-		slog.Error("failed to init database", "error", err)
+		log.Error("failed to init database", "error", err)
 		os.Exit(1)
 	}
+	log.Info("database connected")
 
-	mux := http.NewServeMux()
+	// --- Repositories ---
+	userRepo := postgres.NewUserRepository(db)
+	taskRepo := postgres.NewTaskRepository(db)
+	progressRepo := postgres.NewProgressEntryRepository(db)
 
-	mux.HandleFunc("GET /api/v1/health", func(w http.ResponseWriter, _ *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(`{"status":"ok"}`))
-	})
+	// --- JWT Manager ---
+	jwtManager := auth.NewJWTManager(&cfg.JWT)
 
+	// --- Usecases ---
+	authUC := usecase.NewAuthUsecase(userRepo, jwtManager, log)
+	taskUC := usecase.NewTaskUsecase(taskRepo, progressRepo, log)
+	progressUC := usecase.NewProgressUsecase(taskRepo, progressRepo, log)
+
+	// --- HTTP Router ---
+	router := delivery.NewRouter(
+		authUC,
+		taskUC,
+		progressUC,
+		jwtManager,
+		log,
+		cfg.Server.CORSAllowedOrigins,
+	)
+
+	// --- HTTP Server ---
 	server := &http.Server{
 		Addr:         ":" + cfg.Server.Port,
-		Handler:      mux,
+		Handler:      router,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
 		IdleTimeout:  60 * time.Second,
 	}
 
-	// Graceful shutdown
+	// --- Graceful Shutdown ---
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
@@ -62,22 +85,23 @@ func main() {
 			os.Exit(1)
 		}
 	}()
+
 	<-quit
 	log.Info("shutting down server...")
 
-	const baseTimeout = 10
-	ctx, cancel := context.WithTimeout(context.Background(), baseTimeout*time.Second)
+	const shutdownTimeout = 10
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout*time.Second)
 
 	if err := server.Shutdown(ctx); err != nil {
-		cancel()
 		log.Error("server forced to shutdown", "error", err)
+		cancel()
 		os.Exit(1)
 	}
+	cancel()
 
 	if err := db.Close(); err != nil {
-		slog.Error("failed to close database", "error", err)
+		log.Error("failed to close database", "error", err)
 	}
 
-	cancel()
-	log.Info("server stopped")
+	log.Info("server stopped gracefully")
 }

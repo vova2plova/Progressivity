@@ -14,7 +14,8 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	Port string
+	Port               string
+	CORSAllowedOrigins string
 }
 
 type DatabaseConfig struct {
@@ -57,7 +58,8 @@ func Load() (*Config, error) {
 
 	return &Config{
 		Server: ServerConfig{
-			Port: getEnv("SERVER_PORT", "8080"),
+			Port:               getEnv("SERVER_PORT", "8080"),
+			CORSAllowedOrigins: getEnv("CORS_ALLOWED_ORIGINS", "http://localhost:5173"),
 		},
 		Database: DatabaseConfig{
 			Host:     getEnv("DB_HOST", "localhost"),

@@ -17,6 +17,7 @@ func NewRouter(
 	progressUC *usecase.ProgressUsecase,
 	jwtManager *auth.JWTManager,
 	log *slog.Logger,
+	corsAllowedOrigins string,
 ) http.Handler {
 	mux := http.NewServeMux()
 
@@ -26,6 +27,13 @@ func NewRouter(
 
 	// Auth middleware
 	authMW := middleware.Auth(jwtManager)
+
+	// --- Health check ---
+	mux.HandleFunc("GET /api/v1/health", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte(`{"status":"ok"}`))
+	})
 
 	// --- Public routes: Auth ---
 	mux.HandleFunc("POST /api/v1/auth/register", authHandler.Register)
@@ -49,10 +57,11 @@ func NewRouter(
 	mux.Handle("POST /api/v1/tasks/{id}/progress", authMW(http.HandlerFunc(taskHandler.AddProgress)))
 	mux.Handle("DELETE /api/v1/progress/{id}", authMW(http.HandlerFunc(taskHandler.DeleteProgress)))
 
-	// Apply global middleware stack: logging -> recovery -> handler
+	// Apply global middleware stack: CORS -> logging -> recovery -> handler
 	var rootHandler http.Handler = mux
 	rootHandler = middleware.Recovery(log)(rootHandler)
 	rootHandler = middleware.Logging(log)(rootHandler)
+	rootHandler = middleware.CORS(corsAllowedOrigins)(rootHandler)
 
 	return rootHandler
 }

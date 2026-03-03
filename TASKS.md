@@ -113,12 +113,11 @@
 - [x] Подключить middleware (auth, CORS, logging, recovery)
 
 ## Фаза 7: Интеграция Backend
-- [ ] Собрать всё в `cmd/api/main.go` (dependency injection)
-- [ ] Добавить graceful shutdown
-- [ ] Добавить CORS для frontend dev server
-- [ ] Проверить все эндпоинты через curl / httpie / Postman
-- [ ] Написать unit-тесты для usecase (мок репозиториев)
-- [ ] Написать handler-тесты с httptest
+- [x] Собрать всё в `cmd/api/main.go` (dependency injection)
+- [x] Добавить graceful shutdown
+- [x] Добавить CORS для frontend dev server
+- [x] Написать unit-тесты для usecase (мок репозиториев)
+- [x] Написать handler-тесты с httptest
 
 ## Фаза 8: Frontend на моках — типы и in-memory store
 - [x] Определить TypeScript-типы (`web/src/types/`)
