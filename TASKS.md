@@ -90,27 +90,27 @@
   - [x] ListProgress
 
 ## Фаза 6: HTTP Delivery layer
-- [ ] Определить Task DTO (`delivery/http/dto/task_dto.go`)
-  - [ ] CreateTaskRequest / CreateTaskResponse
-  - [ ] UpdateTaskRequest
-  - [ ] TaskResponse (с прогрессом)
-  - [ ] TaskTreeResponse (рекурсивный)
-  - [ ] ProgressEntryRequest / ProgressEntryResponse
-- [ ] Реализовать Task handler (`delivery/http/handler/task_handler.go`)
-  - [ ] GET    /tasks
-  - [ ] POST   /tasks
-  - [ ] GET    /tasks/:id
-  - [ ] PUT    /tasks/:id
-  - [ ] DELETE /tasks/:id
-  - [ ] GET    /tasks/:id/children
-  - [ ] POST   /tasks/:id/children
-  - [ ] GET    /tasks/:id/tree
-  - [ ] PATCH  /tasks/:id/reorder
-  - [ ] GET    /tasks/:id/progress
-  - [ ] POST   /tasks/:id/progress
-  - [ ] DELETE /progress/:id
-- [ ] Настроить роутер (`delivery/http/router.go`)
-- [ ] Подключить middleware (auth, CORS, logging, recovery)
+- [x] Определить Task DTO (`delivery/http/dto/task_dto.go`)
+  - [x] CreateTaskRequest / CreateTaskResponse
+  - [x] UpdateTaskRequest
+  - [x] TaskResponse (с прогрессом)
+  - [x] TaskTreeResponse (рекурсивный)
+  - [x] ProgressEntryRequest / ProgressEntryResponse
+- [x] Реализовать Task handler (`delivery/http/handler/task_handler.go`)
+  - [x] GET    /tasks
+  - [x] POST   /tasks
+  - [x] GET    /tasks/:id
+  - [x] PUT    /tasks/:id
+  - [x] DELETE /tasks/:id
+  - [x] GET    /tasks/:id/children
+  - [x] POST   /tasks/:id/children
+  - [x] GET    /tasks/:id/tree
+  - [x] PATCH  /tasks/:id/reorder
+  - [x] GET    /tasks/:id/progress
+  - [x] POST   /tasks/:id/progress
+  - [x] DELETE /progress/:id
+- [x] Настроить роутер (`delivery/http/router.go`)
+- [x] Подключить middleware (auth, CORS, logging, recovery)
 
 ## Фаза 7: Интеграция Backend
 - [ ] Собрать всё в `cmd/api/main.go` (dependency injection)
