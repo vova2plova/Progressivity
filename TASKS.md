@@ -36,22 +36,22 @@
 - [x] Реализовать `UserRepository` для PostgreSQL
   - [x] Create
   - [x] GetByID
-  - [ ] GetByEmail
-  - [ ] GetByUsername
-- [ ] Реализовать `TaskRepository` для PostgreSQL
-  - [ ] Create
-  - [ ] GetByID
-  - [ ] Update
-  - [ ] Delete (каскадное через FK)
-  - [ ] ListByParentID (дочерние задачи)
-  - [ ] ListRootByUserID (top-level задачи)
-  - [ ] GetTreeByID (рекурсивный запрос — CTE)
-  - [ ] UpdatePosition
-- [ ] Реализовать `ProgressEntryRepository`
-  - [ ] Create
-  - [ ] Delete
-  - [ ] ListByTaskID
-  - [ ] SumByTaskID
+  - [x] GetByEmail
+  - [x] GetByUsername
+- [x] Реализовать `TaskRepository` для PostgreSQL
+  - [x] Create
+  - [x] GetByID
+  - [x] Update
+  - [x] Delete (каскадное через FK)
+  - [x] ListByParentID (дочерние задачи)
+  - [x] ListRootByUserID (top-level задачи)
+  - [x] GetTreeByID (рекурсивный запрос — CTE)
+  - [x] UpdatePosition
+- [x] Реализовать `ProgressEntryRepository`
+  - [x] Create
+  - [x] Delete
+  - [x] ListByTaskID
+  - [x] SumByTaskID
 
 ## Фаза 4: Auth (JWT)
 - [ ] Реализовать JWT-менеджер (`infrastructure/auth/jwt.go`)

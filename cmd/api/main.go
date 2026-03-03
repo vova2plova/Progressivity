@@ -29,7 +29,7 @@ func main() {
 		"log_level", cfg.Log.Level,
 	)
 
-	db, err := postgres.InitDB(&cfg.Database)
+	db, err := postgres.InitDB(context.Background(), &cfg.Database)
 	if err != nil {
 		slog.Error("failed to init database", "error", err)
 		os.Exit(1)
