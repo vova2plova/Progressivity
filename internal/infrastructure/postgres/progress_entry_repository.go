@@ -51,6 +51,20 @@ func (r *progressEntryRepository) Create(ctx context.Context, entry *domain.Prog
 	return created, nil
 }
 
+func (r *progressEntryRepository) GetByID(ctx context.Context, id uuid.UUID) (*domain.ProgressEntry, error) {
+	query := `SELECT id, task_id, value, note, recorded_at, created_at
+		FROM progress_entries WHERE id = $1`
+
+	entry, err := scanProgressEntry(r.db.QueryRowContext(ctx, query, id))
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, domain.ErrProgressNotFound
+		}
+		return nil, err
+	}
+	return entry, nil
+}
+
 func (r *progressEntryRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	result, err := r.db.ExecContext(ctx,
 		`DELETE FROM progress_entries WHERE id = $1`, id,

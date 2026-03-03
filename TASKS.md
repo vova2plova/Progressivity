@@ -69,25 +69,25 @@
 - [x] Определить Auth DTO (`delivery/http/dto/auth_dto.go`)
 
 ## Фаза 5: Task Usecase
-- [ ] Реализовать `TaskUsecase` (`usecase/task_usecase.go`)
-  - [ ] CreateTask (top-level)
-  - [ ] CreateChildTask (с проверкой владельца родителя)
-  - [ ] GetTask (с расчётом прогресса)
-  - [ ] UpdateTask
-  - [ ] DeleteTask (проверка владельца)
-  - [ ] ListRootTasks
-  - [ ] ListChildren
-  - [ ] GetTree (рекурсивный расчёт прогресса)
-  - [ ] ReorderTask
-- [ ] Реализовать алгоритм рекурсивного расчёта прогресса
-  - [ ] Leaf + target_value: sum(entries) / target
-  - [ ] Leaf бинарная: 0% / 100%
-  - [ ] Container: avg(children)
-  - [ ] Комбо: completed_children / total_children + avg %
-- [ ] Реализовать `ProgressUsecase`
-  - [ ] AddProgress (проверка: только leaf-задачи)
-  - [ ] DeleteProgress
-  - [ ] ListProgress
+- [x] Реализовать `TaskUsecase` (`usecase/task_usecase.go`)
+  - [x] CreateTask (top-level)
+  - [x] CreateChildTask (с проверкой владельца родителя)
+  - [x] GetTask (с расчётом прогресса)
+  - [x] UpdateTask
+  - [x] DeleteTask (проверка владельца)
+  - [x] ListRootTasks
+  - [x] ListChildren
+  - [x] GetTree (рекурсивный расчёт прогресса)
+  - [x] ReorderTask
+- [x] Реализовать алгоритм рекурсивного расчёта прогресса
+  - [x] Leaf + target_value: sum(entries) / target
+  - [x] Leaf бинарная: 0% / 100%
+  - [x] Container: avg(children)
+  - [x] Комбо: completed_children / total_children + avg %
+- [x] Реализовать `ProgressUsecase`
+  - [x] AddProgress (проверка: только leaf-задачи)
+  - [x] DeleteProgress
+  - [x] ListProgress
 
 ## Фаза 6: HTTP Delivery layer
 - [ ] Определить Task DTO (`delivery/http/dto/task_dto.go`)

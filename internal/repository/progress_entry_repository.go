@@ -9,6 +9,7 @@ import (
 
 type ProgressEntryRepository interface {
 	Create(ctx context.Context, entry *domain.ProgressEntry) (*domain.ProgressEntry, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*domain.ProgressEntry, error)
 	Delete(ctx context.Context, id uuid.UUID) error
 	ListByTaskID(ctx context.Context, taskID uuid.UUID) ([]*domain.ProgressEntry, error)
 	SumByTaskID(ctx context.Context, taskID uuid.UUID) (float64, error)
