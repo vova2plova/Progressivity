@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
-import { useTasks } from '../store'
+import { useTasksData } from '../hooks/useFeatureFlaggedData'
 import type { CreateTaskRequest } from '../types'
 
 interface CreateTaskFormProps {
@@ -11,7 +11,7 @@ interface CreateTaskFormProps {
 }
 
 export function CreateTaskForm({ open, onOpenChange, parentId = null }: CreateTaskFormProps) {
-  const { createTask } = useTasks()
+  const { createTask } = useTasksData()
   const [form, setForm] = useState<CreateTaskRequest>({
     title: '',
     description: '',
@@ -26,7 +26,7 @@ export function CreateTaskForm({ open, onOpenChange, parentId = null }: CreateTa
     e.preventDefault()
     setIsSubmitting(true)
     try {
-      createTask(form)
+      await createTask(form)
       onOpenChange(false)
       setForm({
         title: '',
@@ -36,6 +36,9 @@ export function CreateTaskForm({ open, onOpenChange, parentId = null }: CreateTa
         deadline: null,
         parentId,
       })
+    } catch (error) {
+      console.error('Failed to create task:', error)
+      // Optionally show error message to user
     } finally {
       setIsSubmitting(false)
     }

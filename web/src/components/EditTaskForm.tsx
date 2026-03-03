@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
-import { useTasks } from '../store'
+import { useTasksData } from '../hooks/useFeatureFlaggedData'
 import type { UpdateTaskRequest, TaskWithProgress } from '../types'
 
 interface EditTaskFormProps {
@@ -11,7 +11,7 @@ interface EditTaskFormProps {
 }
 
 export function EditTaskForm({ open, onOpenChange, task }: EditTaskFormProps) {
-  const { updateTask } = useTasks()
+  const { updateTask } = useTasksData()
   const [form, setForm] = useState<UpdateTaskRequest>({
     title: '',
     description: null,
@@ -39,8 +39,11 @@ export function EditTaskForm({ open, onOpenChange, task }: EditTaskFormProps) {
     e.preventDefault()
     setIsSubmitting(true)
     try {
-      updateTask(task.id, form)
+      await updateTask(task.id, form)
       onOpenChange(false)
+    } catch (error) {
+      console.error('Failed to update task:', error)
+      // Optionally show error message to user
     } finally {
       setIsSubmitting(false)
     }

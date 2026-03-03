@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
-import { useProgress } from '../store'
+import { useProgressData } from '../hooks/useFeatureFlaggedData'
 import type { CreateProgressRequest } from '../types'
 
 interface AddProgressFormProps {
@@ -11,7 +11,7 @@ interface AddProgressFormProps {
 }
 
 export function AddProgressForm({ open, onOpenChange, taskId }: AddProgressFormProps) {
-  const { addProgress } = useProgress()
+  const { addProgress } = useProgressData()
   const [form, setForm] = useState<CreateProgressRequest>({
     value: 0,
     note: '',
@@ -23,13 +23,16 @@ export function AddProgressForm({ open, onOpenChange, taskId }: AddProgressFormP
     e.preventDefault()
     setIsSubmitting(true)
     try {
-      addProgress(taskId, form)
+      await addProgress(taskId, form)
       onOpenChange(false)
       setForm({
         value: 0,
         note: '',
         recordedAt: new Date().toISOString().split('T')[0],
       })
+    } catch (error) {
+      console.error('Failed to add progress:', error)
+      // Optionally show error message to user
     } finally {
       setIsSubmitting(false)
     }

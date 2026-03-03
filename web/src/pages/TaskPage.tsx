@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { useTasks } from '../store'
+import { useTaskData, useTasksData } from '../hooks/useFeatureFlaggedData'
 import type { TaskStatus } from '../types'
 import {
   ProgressBar,
@@ -14,14 +14,30 @@ import {
 
 export function TaskPage() {
   const { id } = useParams<{ id: string }>()
-  const { getTaskWithProgress, updateTask } = useTasks()
-  const task = id ? getTaskWithProgress(id) : undefined
-  const parentTask = task?.parentId ? getTaskWithProgress(task.parentId) : undefined
+  const { task, isLoading, error } = useTaskData(id)
+  const { updateTask } = useTasksData()
+  const { task: parentTask } = useTaskData(task?.parentId || undefined)
 
   const [createSubtaskOpen, setCreateSubtaskOpen] = useState(false)
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [addProgressOpen, setAddProgressOpen] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
+
+  if (isLoading) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-gray-500 text-lg">Loading task...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12 text-red-600">
+        <div className="text-lg">Error loading task: {error.message}</div>
+      </div>
+    )
+  }
 
   if (!task) {
     return (

@@ -1,4 +1,4 @@
-import { useProgress } from '../store'
+import { useProgressData } from '../hooks/useFeatureFlaggedData'
 import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 
@@ -7,15 +7,24 @@ interface ProgressHistoryProps {
 }
 
 export function ProgressHistory({ taskId }: ProgressHistoryProps) {
-  const { getProgressEntries, deleteProgress } = useProgress()
+  const { entries, deleteProgress, isLoading } = useProgressData(taskId)
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
-  const entries = getProgressEntries(taskId)
+  if (isLoading) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        <div>Loading progress history...</div>
+      </div>
+    )
+  }
 
   const handleDelete = async (id: string) => {
     setDeletingId(id)
     try {
-      deleteProgress(id)
+      await deleteProgress(id)
+    } catch (error) {
+      console.error('Failed to delete progress entry:', error)
+      // Optionally show error message to user
     } finally {
       setDeletingId(null)
     }

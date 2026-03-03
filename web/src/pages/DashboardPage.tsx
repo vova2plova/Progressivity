@@ -1,10 +1,26 @@
 import { useState } from 'react'
-import { useTasks } from '../store'
+import { useTasksData } from '../hooks/useFeatureFlaggedData'
 import { TaskCard, CreateTaskForm } from '../components'
 
 export function DashboardPage() {
-  const { rootTasks } = useTasks()
+  const { rootTasks, isLoading, error } = useTasksData()
   const [createModalOpen, setCreateModalOpen] = useState(false)
+
+  if (isLoading) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-gray-500 text-lg">Loading goals...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12 text-red-600">
+        <div className="text-lg">Error loading goals: {error.message}</div>
+      </div>
+    )
+  }
 
   return (
     <>

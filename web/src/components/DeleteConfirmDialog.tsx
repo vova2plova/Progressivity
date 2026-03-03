@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
-import { useTasks } from '../store'
+import { useTasksData } from '../hooks/useFeatureFlaggedData'
 
 interface DeleteConfirmDialogProps {
   open: boolean
@@ -15,14 +15,17 @@ export function DeleteConfirmDialog({
   taskId,
   taskTitle,
 }: DeleteConfirmDialogProps) {
-  const { deleteTask } = useTasks()
+  const { deleteTask } = useTasksData()
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleDelete = async () => {
     setIsDeleting(true)
     try {
-      deleteTask(taskId)
+      await deleteTask(taskId)
       onOpenChange(false)
+    } catch (error) {
+      console.error('Failed to delete task:', error)
+      // Optionally show error message to user
     } finally {
       setIsDeleting(false)
     }
