@@ -1,13 +1,13 @@
 import { apiClient } from './client'
-import type { AuthRequest, AuthResponse } from '../types'
+import type { LoginRequest, RegisterRequest, AuthResponse } from '../types'
 
 export const authApi = {
-  login: async (credentials: AuthRequest): Promise<AuthResponse> => {
+  login: async (credentials: LoginRequest): Promise<AuthResponse> => {
     const { data } = await apiClient.post<AuthResponse>('/auth/login', credentials)
     return data
   },
 
-  register: async (credentials: AuthRequest & { username: string }): Promise<AuthResponse> => {
+  register: async (credentials: RegisterRequest): Promise<AuthResponse> => {
     const { data } = await apiClient.post<AuthResponse>('/auth/register', credentials)
     return data
   },
@@ -19,7 +19,9 @@ export const authApi = {
     return data
   },
 
-  logout: async (): Promise<void> => {
-    await apiClient.post('/auth/logout')
+  logout: async (refreshToken: string): Promise<void> => {
+    await apiClient.post('/auth/logout', {
+      refresh_token: refreshToken,
+    })
   },
 }

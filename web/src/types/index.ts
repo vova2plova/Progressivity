@@ -84,19 +84,30 @@ export interface ReorderTaskRequest {
   newParentId?: UUID | null
 }
 
-export interface AuthRequest {
+export interface LoginRequest {
   email: string
   password: string
 }
 
+export interface RegisterRequest {
+  email: string
+  username: string
+  password: string
+}
+
+// Matches backend dto.AuthResponse (snake_case JSON)
 export interface AuthResponse {
-  accessToken: string
-  refreshToken: string
-  user: User
+  access_token: string
+  refresh_token: string
+}
+
+// Auth user info stored on the client (extracted from JWT + form data)
+export interface AuthUser {
+  id: UUID
+  email: string
+  username: string
 }
 
 export interface ErrorResponse {
   error: string
-  message: string
-  code: string
 }
