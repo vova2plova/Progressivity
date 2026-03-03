@@ -175,14 +175,14 @@
 - [x] Проверить полный flow на моках: создать цель -> подзадачи -> добавить прогресс -> видеть обновление
 
 ## Фаза 11: Frontend — интеграция с Backend API
-- [ ] Настроить TanStack Query (QueryClientProvider)
-- [ ] Создать API-клиент (`web/src/api/client.ts`) с interceptors для JWT
-- [ ] Реализовать API-функции (`web/src/api/tasks.ts`, `web/src/api/auth.ts`, `web/src/api/progress.ts`)
-- [ ] Заменить mock store на API hooks
-  - [ ] useTasks, useTask, useTaskTree
-  - [ ] useCreateTask, useUpdateTask, useDeleteTask
-  - [ ] useProgress, useAddProgress, useDeleteProgress
-- [ ] Feature flag / переключатель: моки ↔ реальный API (для разработки)
+- [x] Настроить TanStack Query (QueryClientProvider)
+- [x] Создать API-клиент (`web/src/api/client.ts`) с interceptors для JWT
+- [x] Реализовать API-функции (`web/src/api/tasks.ts`, `web/src/api/auth.ts`, `web/src/api/progress.ts`)
+- [x] Заменить mock store на API hooks
+  - [x] useTasks, useTask, useTaskTree
+  - [x] useCreateTask, useUpdateTask, useDeleteTask
+  - [x] useProgress, useAddProgress, useDeleteProgress
+- [x] Feature flag / переключатель: моки ↔ реальный API (для разработки)
 
 ## Фаза 12: Frontend — Auth
 - [ ] Страница регистрации
