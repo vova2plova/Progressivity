@@ -1,6 +1,7 @@
 import { useProgressData } from '../hooks/useFeatureFlaggedData'
-import { Trash2 } from 'lucide-react'
+import { Trash2, History } from 'lucide-react'
 import { useState } from 'react'
+import { EmptyState } from './EmptyState'
 
 interface ProgressHistoryProps {
   taskId: string
@@ -32,10 +33,12 @@ export function ProgressHistory({ taskId }: ProgressHistoryProps) {
 
   if (entries.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        <div className="mb-2">No progress entries yet.</div>
-        <div className="text-sm">Add your first progress entry to track your work.</div>
-      </div>
+      <EmptyState
+        icon={History}
+        title="No progress entries yet"
+        description="Add your first progress entry to track your work."
+        className="py-8"
+      />
     )
   }
 

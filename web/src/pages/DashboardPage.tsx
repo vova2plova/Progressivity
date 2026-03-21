@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTasksData } from '../hooks/useFeatureFlaggedData'
-import { TaskCard, CreateTaskForm } from '../components'
+import { TaskCard, CreateTaskForm, EmptyState } from '../components'
+import { Target } from 'lucide-react'
 
 export function DashboardPage() {
   const { rootTasks, isLoading, error } = useTasksData()
@@ -36,16 +37,20 @@ export function DashboardPage() {
         </div>
 
         {rootTasks.length === 0 ? (
-          <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-xl">
-            <div className="text-gray-500 text-lg mb-2">No goals yet</div>
-            <p className="text-gray-400 mb-6">Create your first goal to start tracking progress</p>
-            <button
-              onClick={() => setCreateModalOpen(true)}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
-            >
-              Create First Goal
-            </button>
-          </div>
+          <EmptyState
+            icon={Target}
+            title="No goals yet"
+            description="Create your first goal to start tracking progress"
+            action={
+              <button
+                onClick={() => setCreateModalOpen(true)}
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              >
+                Create First Goal
+              </button>
+            }
+            className="border-2 border-dashed border-gray-300 rounded-xl"
+          />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {rootTasks.map((task) => (

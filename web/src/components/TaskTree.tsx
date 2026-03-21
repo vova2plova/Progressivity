@@ -1,8 +1,9 @@
 import type { TaskWithProgress } from '../types'
 import { ProgressBar } from './ProgressBar'
-import { ChevronRight, ChevronDown } from 'lucide-react'
+import { ChevronRight, ChevronDown, ListTree } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { EmptyState } from './EmptyState'
 
 interface TaskTreeProps {
   tasks: TaskWithProgress[]
@@ -17,7 +18,7 @@ export function TaskTree({ tasks, depth = 0 }: TaskTreeProps) {
   }
 
   if (tasks.length === 0) {
-    return <div className="text-gray-500 text-center py-4">No tasks</div>
+    return <EmptyState icon={ListTree} title="No tasks" className="py-4" />
   }
 
   return (

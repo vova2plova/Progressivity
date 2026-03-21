@@ -10,7 +10,9 @@ import {
   DeleteConfirmDialog,
   AddProgressForm,
   ProgressHistory,
+  EmptyState,
 } from '../components'
+import { FolderPlus, BarChart } from 'lucide-react'
 
 export function TaskPage() {
   const { id } = useParams<{ id: string }>()
@@ -141,9 +143,12 @@ export function TaskPage() {
               {task.children && task.children.length > 0 ? (
                 <TaskTree tasks={task.children} />
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  No subtasks yet. Add your first subtask to break down this goal.
-                </div>
+                <EmptyState
+                  icon={FolderPlus}
+                  title="No subtasks yet"
+                  description="Add your first subtask to break down this goal."
+                  className="py-8"
+                />
               )}
             </div>
           </div>
@@ -174,9 +179,12 @@ export function TaskPage() {
             {task.type === 'container' && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Progress History</h2>
-                <div className="text-center py-8 text-gray-500">
-                  Progress history is available for leaf tasks only.
-                </div>
+                <EmptyState
+                  icon={BarChart}
+                  title="Progress history"
+                  description="Progress history is available for leaf tasks only."
+                  className="py-8"
+                />
               </div>
             )}
           </div>
