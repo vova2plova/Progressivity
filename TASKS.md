@@ -184,25 +184,25 @@
   - [x] useProgress, useAddProgress, useDeleteProgress
 - [x] Feature flag / переключатель: моки ↔ реальный API (для разработки)
 
-## Фаза 12: Frontend — Auth
-- [ ] Страница регистрации
-- [ ] Страница логина
-- [ ] Auth context / store (хранение tokens, auto-refresh)
-- [ ] Protected routes (редирект на логин если не авторизован)
-- [ ] API hooks: useLogin, useRegister, useLogout
+## Фаза 12: Frontend — Auth ✅
+- [x] Страница регистрации
+- [x] Страница логина
+- [x] Auth context / store (хранение tokens, auto-refresh)
+- [x] Protected routes (редирект на логин если не авторизован)
+- [x] API hooks: useLogin, useRegister, useLogout
 
 ## Фаза 13: Полировка
-- [ ] Адаптивный дизайн (мобильная версия)
-- [ ] Loading states и скелетоны
-- [ ] Error handling и toast-уведомления
-- [ ] Empty states для всех списков
-- [ ] Оптимистичные обновления (TanStack Query)
-- [ ] Финальное тестирование E2E сценариев
+- [x] Адаптивный дизайн (мобильная версия) — базовая адаптивность есть
+- [x] Loading states (базовые) — скелетоны требуют доработки
+- [x] Error handling (базовое) — toast-уведомления требуют реализации
+- [x] Empty states (для основных списков) — требует расширения
+- [ ] Оптимистичные обновления (TanStack Query) — требуется реализация
+- [ ] Финальное тестирование E2E сценариев — требуется реализация
 
 ---
 
 ## Приоритеты
 
 - **P0 (Must Have)**: Фазы 0-7 (backend) + Фазы 8-10 (frontend на моках)
-- **P1 (Should Have)**: Фазы 11-12 (интеграция с API, auth), Фаза 13 (полировка)
+- **P1 (Should Have)**: Фазы 11-12 (интеграция с API, auth) ✅, Фаза 13 (полировка, частично)
 - **P2 (Nice to Have)**: Графики прогресса, дедлайн-индикаторы, пользовательские единицы, reorder
