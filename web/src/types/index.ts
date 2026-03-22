@@ -50,6 +50,7 @@ export interface ProgressEntry {
 
 export interface TaskWithProgress extends Task {
   progress: number // 0-100 percentage
+  currentValue?: number
   completedChildren?: number
   totalChildren?: number
   children?: TaskWithProgress[] // for tree view

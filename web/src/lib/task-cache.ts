@@ -37,6 +37,7 @@ export function createOptimisticTask(input: {
     createdAt: now,
     updatedAt: now,
     progress: 0,
+    currentValue: 0,
     completedChildren: 0,
     totalChildren: type === 'container' ? 0 : undefined,
     children: type === 'container' ? [] : undefined,
@@ -185,16 +186,19 @@ export function updateProgressSnapshot(
   task: TaskWithProgress | undefined,
   deltaValue: number,
 ): TaskWithProgress | undefined {
-  if (!task || task.type !== 'leaf' || task.targetValue === null || task.targetValue <= 0) {
+  if (!task || task.type !== 'leaf') {
     return task
   }
 
-  const nextProgress = Math.max(0, Math.min(100, task.progress + (deltaValue / task.targetValue) * 100))
+  const targetValue = task.targetValue && task.targetValue > 0 ? task.targetValue : 1
+  const nextCurrentValue = Math.max(0, (task.currentValue ?? 0) + deltaValue)
+  const nextProgress = Math.max(0, Math.min(100, (nextCurrentValue / targetValue) * 100))
   const nextStatus: TaskStatus =
     nextProgress >= 100 ? 'completed' : nextProgress > 0 ? 'in_progress' : task.status
 
   return {
     ...task,
+    currentValue: nextCurrentValue,
     progress: nextProgress,
     status: nextStatus,
   }

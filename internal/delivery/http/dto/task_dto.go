@@ -41,7 +41,7 @@ type ReorderTaskRequest struct {
 type CreateProgressRequest struct {
 	Value      float64 `json:"value"`
 	Note       *string `json:"note,omitempty"`
-	RecordedAt *string `json:"recorded_at,omitempty"` // RFC3339 string
+	RecordedAt *string `json:"recorded_at,omitempty"` // RFC3339 or date-only (YYYY-MM-DD) string
 }
 
 // --- Response DTOs ---
@@ -153,25 +153,26 @@ func ProgressEntryResponseFromDomain(e *domain.ProgressEntry) ProgressEntryRespo
 	}
 }
 
-// parseDeadline parses a deadline string that can be empty, RFC3339, or date-only (YYYY-MM-DD).
+// parseOptionalDateTime parses a string that can be empty, RFC3339, or date-only (YYYY-MM-DD).
 // Returns nil if the string is empty.
-func parseDeadline(s string) (*time.Time, error) {
+func parseOptionalDateTime(s string) (*time.Time, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
 		return nil, nil
 	}
-	// Try RFC3339 first
+
 	t, err := time.Parse(time.RFC3339, s)
 	if err == nil {
 		return &t, nil
 	}
-	// Try date-only format (YYYY-MM-DD)
+
 	t, err = time.Parse("2006-01-02", s)
 	if err == nil {
-		// Set to start of day UTC
+		// Date-only values are interpreted as the start of the day in UTC.
 		t = time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
 		return &t, nil
 	}
+
 	return nil, err
 }
 
@@ -186,7 +187,7 @@ func (r *CreateTaskRequest) ToDomainTask() (*domain.Task, error) {
 	}
 
 	if r.Deadline != nil {
-		t, err := parseDeadline(*r.Deadline)
+		t, err := parseOptionalDateTime(*r.Deadline)
 		if err != nil {
 			return nil, err
 		}
@@ -212,7 +213,7 @@ func (r *UpdateTaskRequest) ToDomainTask() (*domain.Task, error) {
 	}
 
 	if r.Deadline != nil {
-		t, err := parseDeadline(*r.Deadline)
+		t, err := parseOptionalDateTime(*r.Deadline)
 		if err != nil {
 			return nil, err
 		}
@@ -230,11 +231,15 @@ func (r *CreateProgressRequest) ToDomainProgressEntry() (*domain.ProgressEntry, 
 	}
 
 	if r.RecordedAt != nil {
-		t, err := time.Parse(time.RFC3339, *r.RecordedAt)
+		t, err := parseOptionalDateTime(*r.RecordedAt)
 		if err != nil {
 			return nil, err
 		}
-		entry.RecordedAt = t
+		if t != nil {
+			entry.RecordedAt = *t
+		} else {
+			entry.RecordedAt = time.Now()
+		}
 	} else {
 		entry.RecordedAt = time.Now()
 	}

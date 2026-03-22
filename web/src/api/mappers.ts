@@ -9,6 +9,7 @@ import type {
   UpdateTaskRequest,
   UUID,
 } from '../types'
+import { toApiDateTime } from '../lib/date'
 
 interface ApiTask {
   id: UUID
@@ -23,11 +24,27 @@ interface ApiTask {
   position: number
   deadline?: string | null
   progress?: number
+  current_value?: number
   completed_children?: number
   total_children?: number
   created_at: string
   updated_at: string
   children?: ApiTask[]
+}
+
+function resolveTaskProgress(task: ApiTask): number {
+  const currentValue = task.current_value ?? 0
+  const targetValue = task.target_value ?? 1
+
+  if (typeof task.progress === 'number' && task.progress > 0) {
+    return task.progress
+  }
+
+  if (currentValue <= 0) {
+    return task.progress ?? 0
+  }
+
+  return Math.max(0, Math.min(100, (currentValue / targetValue) * 100))
 }
 
 interface ApiProgressEntry {
@@ -68,7 +85,8 @@ export function mapApiTask(task: ApiTask): Task {
 export function mapApiTaskWithProgress(task: ApiTask): TaskWithProgress {
   return {
     ...mapApiTask(task),
-    progress: task.progress ?? 0,
+    progress: resolveTaskProgress(task),
+    currentValue: task.current_value ?? 0,
     completedChildren: task.completed_children,
     totalChildren: task.total_children,
     children: task.children?.map(mapApiTaskWithProgress),
@@ -101,6 +119,6 @@ export function mapProgressPayload(entry: CreateProgressRequest) {
   return {
     value: entry.value,
     note: entry.note ?? null,
-    recorded_at: entry.recordedAt ?? null,
+    recorded_at: toApiDateTime(entry.recordedAt),
   }
 }

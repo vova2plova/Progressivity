@@ -2,6 +2,7 @@ import { useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
 import { useProgressData } from '../hooks/useFeatureFlaggedData'
+import { todayDateInputValue } from '../lib/date'
 import { getErrorMessage } from '../lib/error'
 import type { CreateProgressRequest } from '../types'
 import { useToast } from './ToastProvider'
@@ -18,11 +19,16 @@ export function AddProgressForm({ open, onOpenChange, taskId }: AddProgressFormP
   const [form, setForm] = useState<CreateProgressRequest>({
     value: 0,
     note: '',
-    recordedAt: new Date().toISOString().split('T')[0],
+    recordedAt: todayDateInputValue(),
   })
+  const [valueInput, setValueInput] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (valueInput.trim() === '') {
+      return
+    }
+
     try {
       await addProgress(taskId, form)
       showSuccessToast('Progress added')
@@ -30,8 +36,9 @@ export function AddProgressForm({ open, onOpenChange, taskId }: AddProgressFormP
       setForm({
         value: 0,
         note: '',
-        recordedAt: new Date().toISOString().split('T')[0],
+        recordedAt: todayDateInputValue(),
       })
+      setValueInput('')
     } catch (error) {
       showErrorToast('Could not add progress', getErrorMessage(error))
     }
@@ -39,6 +46,16 @@ export function AddProgressForm({ open, onOpenChange, taskId }: AddProgressFormP
 
   const handleChange = (field: keyof CreateProgressRequest, value: unknown) => {
     setForm((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleValueChange = (value: string) => {
+    setValueInput(value)
+
+    if (value === '') {
+      return
+    }
+
+    handleChange('value', Number(value))
   }
 
   return (
@@ -62,8 +79,9 @@ export function AddProgressForm({ open, onOpenChange, taskId }: AddProgressFormP
                 min="0"
                 step="any"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                value={form.value}
-                onChange={(e) => handleChange('value', Number(e.target.value))}
+                value={valueInput}
+                onChange={(e) => handleValueChange(e.target.value)}
+                placeholder="0"
               />
             </div>
 

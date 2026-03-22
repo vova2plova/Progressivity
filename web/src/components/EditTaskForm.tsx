@@ -3,6 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
 import { useTasksData } from '../hooks/useFeatureFlaggedData'
 import { getErrorMessage } from '../lib/error'
+import { toDateInputValue } from '../lib/date'
 import type { UpdateTaskRequest, TaskWithProgress } from '../types'
 import { useToast } from './ToastProvider'
 
@@ -31,7 +32,7 @@ export function EditTaskForm({ open, onOpenChange, task }: EditTaskFormProps) {
         description: task.description,
         unit: task.unit,
         targetValue: task.targetValue,
-        deadline: task.deadline,
+        deadline: toDateInputValue(task.deadline) || null,
         status: task.status,
       })
     }

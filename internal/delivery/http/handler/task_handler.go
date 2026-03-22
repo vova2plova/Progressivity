@@ -111,7 +111,7 @@ func decodeProgressRequest(w http.ResponseWriter, r *http.Request) (*domain.Prog
 	}
 	entry, err := req.ToDomainProgressEntry()
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, dto.ErrorResponse{Error: "invalid recorded_at format, expected RFC3339"})
+		writeJSON(w, http.StatusBadRequest, dto.ErrorResponse{Error: "invalid recorded_at format, expected RFC3339 or YYYY-MM-DD"})
 		return nil, false
 	}
 	return entry, true

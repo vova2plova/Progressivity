@@ -332,6 +332,11 @@ sudo ss -ltnp | grep ':80'
 
 Все команды ниже выполнять из `/opt/progressivity`.
 
+Примечание по PostgreSQL 18:
+
+- в `docker-compose.prod.yml` volume должен монтироваться в `/var/lib/postgresql`, а не в `/var/lib/postgresql/data`
+- это требуется из-за нового layout данных в официальном образе `postgres:18`
+
 Сначала поднять базу:
 
 ```bash
