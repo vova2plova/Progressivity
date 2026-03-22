@@ -6,6 +6,11 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background: #f8fafc;
+  font-family:
+    'Segoe UI',
+    'Helvetica Neue',
+    sans-serif;
 }
 
 #root {

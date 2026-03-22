@@ -25,7 +25,13 @@ export function TaskCard({ task }: TaskCardProps) {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div
+      className={`rounded-xl border p-6 shadow-sm transition-shadow hover:shadow-md ${
+        'isOptimistic' in task && task.isOptimistic
+          ? 'border-blue-200 bg-blue-50/70 opacity-85'
+          : 'border-gray-200 bg-white'
+      }`}
+    >
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">

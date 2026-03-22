@@ -45,6 +45,7 @@ export interface ProgressEntry {
   note: string | null
   recordedAt: string // when progress actually happened
   createdAt: string
+  isOptimistic?: boolean
 }
 
 export interface TaskWithProgress extends Task {
@@ -52,6 +53,7 @@ export interface TaskWithProgress extends Task {
   completedChildren?: number
   totalChildren?: number
   children?: TaskWithProgress[] // for tree view
+  isOptimistic?: boolean
 }
 
 // DTOs for API requests/responses

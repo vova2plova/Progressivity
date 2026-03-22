@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import { useTasksData } from '../hooks/useFeatureFlaggedData'
+import { getErrorMessage } from '../lib/error'
+import { useToast } from './ToastProvider'
 
 interface DeleteConfirmDialogProps {
   open: boolean
@@ -17,18 +19,19 @@ export function DeleteConfirmDialog({
   taskTitle,
   onDeleted,
 }: DeleteConfirmDialogProps) {
-  const { deleteTask } = useTasksData()
+  const { deleteTask, deleteTaskPending } = useTasksData()
+  const { showErrorToast, showSuccessToast } = useToast()
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleDelete = async () => {
     setIsDeleting(true)
     try {
       await deleteTask(taskId)
+      showSuccessToast('Task deleted')
       onOpenChange(false)
       onDeleted?.()
     } catch (error) {
-      console.error('Failed to delete task:', error)
-      // Optionally show error message to user
+      showErrorToast('Could not delete task', getErrorMessage(error))
     } finally {
       setIsDeleting(false)
     }
@@ -38,7 +41,7 @@ export function DeleteConfirmDialog({
     <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
       <AlertDialog.Portal>
         <AlertDialog.Overlay className="fixed inset-0 bg-black/50" />
-        <AlertDialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <AlertDialog.Content className="fixed top-1/2 left-1/2 w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl bg-white p-6 shadow-2xl">
           <AlertDialog.Title className="text-xl font-bold text-gray-900 mb-2">
             Delete Task
           </AlertDialog.Title>
@@ -52,10 +55,10 @@ export function DeleteConfirmDialog({
             </AlertDialog.Cancel>
             <AlertDialog.Action
               onClick={handleDelete}
-              disabled={isDeleting}
+              disabled={isDeleting || deleteTaskPending}
               className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium disabled:opacity-50"
             >
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting || deleteTaskPending ? 'Deleting...' : 'Delete'}
             </AlertDialog.Action>
           </div>
         </AlertDialog.Content>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTasksData } from '../hooks/useFeatureFlaggedData'
-import { TaskCard, CreateTaskForm, EmptyState } from '../components'
+import { TaskCard, CreateTaskForm, EmptyState, Skeleton } from '../components'
 import { Target } from 'lucide-react'
 
 export function DashboardPage() {
@@ -9,8 +9,16 @@ export function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="text-center py-12">
-        <div className="text-gray-500 text-lg">Loading goals...</div>
+      <div>
+        <div className="mb-8 flex items-center justify-between">
+          <Skeleton className="h-10 w-48" />
+          <Skeleton className="h-11 w-40" />
+        </div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Skeleton className="h-64 w-full" />
+          <Skeleton className="h-64 w-full" />
+          <Skeleton className="h-64 w-full" />
+        </div>
       </div>
     )
   }

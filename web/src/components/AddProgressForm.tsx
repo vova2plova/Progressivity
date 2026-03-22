@@ -2,7 +2,9 @@ import { useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
 import { useProgressData } from '../hooks/useFeatureFlaggedData'
+import { getErrorMessage } from '../lib/error'
 import type { CreateProgressRequest } from '../types'
+import { useToast } from './ToastProvider'
 
 interface AddProgressFormProps {
   open: boolean
@@ -11,19 +13,19 @@ interface AddProgressFormProps {
 }
 
 export function AddProgressForm({ open, onOpenChange, taskId }: AddProgressFormProps) {
-  const { addProgress } = useProgressData()
+  const { addProgress, addProgressPending } = useProgressData()
+  const { showErrorToast, showSuccessToast } = useToast()
   const [form, setForm] = useState<CreateProgressRequest>({
     value: 0,
     note: '',
     recordedAt: new Date().toISOString().split('T')[0],
   })
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
     try {
       await addProgress(taskId, form)
+      showSuccessToast('Progress added')
       onOpenChange(false)
       setForm({
         value: 0,
@@ -31,10 +33,7 @@ export function AddProgressForm({ open, onOpenChange, taskId }: AddProgressFormP
         recordedAt: new Date().toISOString().split('T')[0],
       })
     } catch (error) {
-      console.error('Failed to add progress:', error)
-      // Optionally show error message to user
-    } finally {
-      setIsSubmitting(false)
+      showErrorToast('Could not add progress', getErrorMessage(error))
     }
   }
 
@@ -46,7 +45,7 @@ export function AddProgressForm({ open, onOpenChange, taskId }: AddProgressFormP
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-        <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <Dialog.Content className="fixed top-1/2 left-1/2 w-[calc(100vw-2rem)] max-h-[85vh] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl bg-white p-6 shadow-2xl">
           <div className="flex justify-between items-center mb-6">
             <Dialog.Title className="text-xl font-bold text-gray-900">Add Progress</Dialog.Title>
             <Dialog.Close className="text-gray-400 hover:text-gray-600">
@@ -95,10 +94,10 @@ export function AddProgressForm({ open, onOpenChange, taskId }: AddProgressFormP
               </Dialog.Close>
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={addProgressPending}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium disabled:opacity-50"
               >
-                {isSubmitting ? 'Adding...' : 'Add Progress'}
+                {addProgressPending ? 'Adding...' : 'Add Progress'}
               </button>
             </div>
           </form>

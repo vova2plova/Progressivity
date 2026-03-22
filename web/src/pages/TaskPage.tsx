@@ -10,6 +10,7 @@ import {
   AddProgressForm,
   ProgressHistory,
   EmptyState,
+  Skeleton,
 } from '../components'
 import { FolderPlus, BarChart } from 'lucide-react'
 
@@ -29,8 +30,18 @@ export function TaskPage() {
 
   if (isLoading) {
     return (
-      <div className="text-center py-12">
-        <div className="text-gray-500 text-lg">Loading task...</div>
+      <div className="space-y-8">
+        <div className="space-y-4">
+          <Skeleton className="h-5 w-48" />
+          <Skeleton className="h-72 w-full" />
+        </div>
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <Skeleton className="h-[28rem] w-full lg:col-span-2" />
+          <div className="space-y-8">
+            <Skeleton className="h-40 w-full" />
+            <Skeleton className="h-72 w-full" />
+          </div>
+        </div>
       </div>
     )
   }
@@ -77,7 +88,14 @@ export function TaskPage() {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{task.title}</h1>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{task.title}</h1>
+                  {'isOptimistic' in task && task.isOptimistic && (
+                    <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+                      Syncing...
+                    </span>
+                  )}
+                </div>
                 {task.description && <p className="text-gray-600 text-lg">{task.description}</p>}
               </div>
               <div className="flex space-x-3">

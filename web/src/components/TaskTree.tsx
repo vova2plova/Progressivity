@@ -63,14 +63,6 @@ export function TaskTree({ tasks, depth = 0 }: TaskTreeProps) {
                     <ProgressBar task={task} showLabel={false} size="sm" />
                   </div>
                   <div className="text-sm text-gray-500">{task.progress.toFixed(0)}%</div>
-                  <div className="flex space-x-2">
-                    <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                      Edit
-                    </button>
-                    <button className="text-red-600 hover:text-red-800 text-sm font-medium">
-                      Delete
-                    </button>
-                  </div>
                 </div>
               </div>
               {task.description && (

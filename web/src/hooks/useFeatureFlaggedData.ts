@@ -42,6 +42,10 @@ export function useTasksData() {
       deleteTask: async (id: UUID) => mock.deleteTask(id),
       reorderTask: async (id: UUID, newPosition: number, newParentId?: UUID | null) =>
         mock.reorderTask(id, newPosition, newParentId),
+      createTaskPending: false,
+      updateTaskPending: false,
+      deleteTaskPending: false,
+      reorderTaskPending: false,
     }
   }
 
@@ -60,6 +64,10 @@ export function useTasksData() {
     deleteTask: deleteMutation.mutateAsync,
     reorderTask: (id: UUID, newPosition: number, newParentId?: UUID | null) =>
       reorderMutation.mutateAsync({ id, data: { newPosition, newParentId } }),
+    createTaskPending: createMutation.isPending,
+    updateTaskPending: updateMutation.isPending,
+    deleteTaskPending: deleteMutation.isPending,
+    reorderTaskPending: reorderMutation.isPending,
   }
 }
 
@@ -100,6 +108,8 @@ export function useProgressData(taskId?: string) {
       addProgress: async (taskId: UUID, data: CreateProgressRequest) =>
         mock.addProgress(taskId, data),
       deleteProgress: async (id: UUID) => mock.deleteProgress(id),
+      addProgressPending: false,
+      deleteProgressPending: false,
     }
   }
 
@@ -109,5 +119,7 @@ export function useProgressData(taskId?: string) {
     addProgress: (taskId: UUID, data: CreateProgressRequest) =>
       addMutation.mutateAsync({ taskId, data }),
     deleteProgress: deleteMutation.mutateAsync,
+    addProgressPending: addMutation.isPending,
+    deleteProgressPending: deleteMutation.isPending,
   }
 }

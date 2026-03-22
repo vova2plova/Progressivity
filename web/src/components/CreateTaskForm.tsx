@@ -2,7 +2,9 @@ import { useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { X } from 'lucide-react'
 import { useTasksData } from '../hooks/useFeatureFlaggedData'
+import { useToast } from './ToastProvider'
 import type { CreateTaskRequest } from '../types'
+import { getErrorMessage } from '../lib/error'
 
 interface CreateTaskFormProps {
   open: boolean
@@ -11,7 +13,8 @@ interface CreateTaskFormProps {
 }
 
 export function CreateTaskForm({ open, onOpenChange, parentId = null }: CreateTaskFormProps) {
-  const { createTask } = useTasksData()
+  const { createTask, createTaskPending } = useTasksData()
+  const { showErrorToast, showSuccessToast } = useToast()
   const [form, setForm] = useState<CreateTaskRequest>({
     title: '',
     description: '',
@@ -20,13 +23,12 @@ export function CreateTaskForm({ open, onOpenChange, parentId = null }: CreateTa
     deadline: null,
     parentId,
   })
-  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
     try {
       await createTask(form)
+      showSuccessToast(parentId ? 'Subtask created' : 'Goal created')
       onOpenChange(false)
       setForm({
         title: '',
@@ -37,10 +39,7 @@ export function CreateTaskForm({ open, onOpenChange, parentId = null }: CreateTa
         parentId,
       })
     } catch (error) {
-      console.error('Failed to create task:', error)
-      // Optionally show error message to user
-    } finally {
-      setIsSubmitting(false)
+      showErrorToast('Could not create task', getErrorMessage(error))
     }
   }
 
@@ -52,7 +51,7 @@ export function CreateTaskForm({ open, onOpenChange, parentId = null }: CreateTa
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-        <Dialog.Content className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+        <Dialog.Content className="fixed top-1/2 left-1/2 w-[calc(100vw-2rem)] max-h-[85vh] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl bg-white p-6 shadow-2xl">
           <div className="flex justify-between items-center mb-6">
             <Dialog.Title className="text-xl font-bold text-gray-900">
               {parentId ? 'Create Subtask' : 'Create New Goal'}
@@ -129,10 +128,10 @@ export function CreateTaskForm({ open, onOpenChange, parentId = null }: CreateTa
               </Dialog.Close>
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={createTaskPending}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium disabled:opacity-50"
               >
-                {isSubmitting ? 'Creating...' : 'Create'}
+                {createTaskPending ? 'Creating...' : 'Create'}
               </button>
             </div>
           </form>
