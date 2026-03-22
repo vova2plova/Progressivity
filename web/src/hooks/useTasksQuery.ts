@@ -62,6 +62,7 @@ export function useUpdateTask() {
       tasksApi.updateTask(id, data),
     onSuccess: (updatedTask) => {
       queryClient.invalidateQueries({ queryKey: TASK_KEYS.detail(updatedTask.id) })
+      queryClient.invalidateQueries({ queryKey: TASK_KEYS.tree(updatedTask.id) })
       queryClient.invalidateQueries({ queryKey: TASK_KEYS.root() })
       if (updatedTask.parentId) {
         queryClient.invalidateQueries({ queryKey: TASK_KEYS.children(updatedTask.parentId) })
