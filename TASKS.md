@@ -32,13 +32,27 @@
 - [x] Проверить локально production-сборку через `docker compose -f docker-compose.prod.yml up`
 
 ## Фаза 3: Конфигурация VPS
-- [ ] Подготовить пользователя для деплоя на VPS
-- [ ] Настроить SSH-доступ по ключу и отключить вход по паролю, если ещё не сделано
-- [ ] Установить Docker Engine и Docker Compose plugin на VPS
-- [ ] Настроить firewall: оставить только SSH и публичный HTTP-порт
-- [ ] Создать директорию приложения на VPS
-- [ ] Подготовить production `.env` на сервере без коммита в репозиторий
-- [ ] Описать пошаговую инструкцию первого запуска на чистом VPS
+- [x] Подготовить пользователя для деплоя на VPS
+- [x] Настроить SSH-доступ по ключу и отключить вход по паролю, если ещё не сделано
+- [x] Установить Docker Engine и Docker Compose plugin на VPS
+- [x] Настроить firewall: оставить только SSH и публичный HTTP-порт
+- [x] Создать директорию приложения на VPS
+- [x] Подготовить production `.env` на сервере без коммита в репозиторий
+- [x] Описать пошаговую инструкцию первого запуска на чистом VPS
+
+Результат фазы 3 зафиксирован в:
+
+- [docs/deployment-phase3.md](/D:/git/Progressivity/docs/deployment-phase3.md) — runbook подготовки `Ubuntu 22.04` VPS
+- [.env.production.example](/D:/git/Progressivity/.env.production.example) — server-side production env template
+
+Зафиксированные server conventions:
+
+- deploy user: `progressivity`
+- app dir: `/opt/progressivity`
+- source delivery: `git clone` / `git pull`
+- production env file: `/opt/progressivity/.env`
+- все production-команды выполняются из `/opt/progressivity`
+- наружу публикуется только `caddy` на `:80`
 
 ## Фаза 4: Первый деплой без домена
 - [ ] Выбрать способ внешнего доступа без домена: по IP через reverse proxy
@@ -49,6 +63,14 @@
 - [ ] Проверить сценарий: регистрация, логин, создание задачи, добавление прогресса
 - [ ] Проверить, что refresh/access token flow работает в production-окружении
 - [ ] Проверить CORS, cookies/headers и base URL в production
+
+Preflight для фазы 4:
+
+- заполнен `/opt/progressivity/.env`
+- команды выполняются из `/opt/progressivity`
+- `docker compose -f docker-compose.prod.yml config` проходит без ошибок
+- deploy user входит в группу `docker`
+- порт `80` не занят посторонним процессом
 
 ## Фаза 5: Эксплуатационный минимум
 - [ ] Настроить автоматический рестарт контейнеров

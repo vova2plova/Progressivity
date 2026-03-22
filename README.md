@@ -116,6 +116,35 @@ Production packaging во второй фазе использует:
 - [web/Caddyfile](/D:/git/Progressivity/web/Caddyfile) для SPA + reverse proxy
 - [docker-compose.prod.yml](/D:/git/Progressivity/docker-compose.prod.yml) для production-like запуска
 
+## VPS Configuration
+
+Фаза 3 фиксирует операционный контракт первого деплоя на `Ubuntu 22.04`:
+
+- deploy user: `progressivity`
+- app dir: `/opt/progressivity`
+- способ доставки кода: `git clone` / `git pull`
+- production env file: `/opt/progressivity/.env`
+- наружу публикуется только `caddy` на `:80`
+
+Артефакты фазы 3:
+
+- [docs/deployment-phase3.md](/D:/git/Progressivity/docs/deployment-phase3.md) — пошаговый runbook для чистого VPS
+- [.env.production.example](/D:/git/Progressivity/.env.production.example) — server-side шаблон production-конфига без dev-значений
+
+Базовый flow первого запуска на VPS:
+
+```bash
+cd /opt/progressivity
+cp .env.production.example .env
+nano .env
+docker compose -f docker-compose.prod.yml up -d postgres
+docker compose -f docker-compose.prod.yml run --rm migrate up
+docker compose -f docker-compose.prod.yml up -d backend caddy
+curl -i http://<VPS_IP>/api/v1/health
+```
+
+Фаза 4 должна использовать именно этот контракт: рабочий каталог `/opt/progressivity`, server-side `.env` рядом с `docker-compose.prod.yml` и preflight через `docker compose ... config`.
+
 ## Структура проекта
 
 ```
@@ -176,6 +205,8 @@ npm run lint        # линтер
 - [TASKS.md](TASKS.md) — план реализации
 - [AGENTS.md](AGENTS.md) — инструкции для AI-агентов
 - [docs/deployment-phase1.md](/D:/git/Progressivity/docs/deployment-phase1.md) — зафиксированная схема первого VPS-деплоя
+- [docs/deployment-phase3.md](/D:/git/Progressivity/docs/deployment-phase3.md) — runbook подготовки Ubuntu 22.04 VPS и первого запуска
+- [.env.production.example](/D:/git/Progressivity/.env.production.example) — production env template для сервера
 
 ## Лицензия
 
