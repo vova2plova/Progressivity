@@ -33,12 +33,12 @@ export function TaskTree({ tasks, depth = 0 }: TaskTreeProps) {
               className="bg-white p-4 hover:bg-gray-50"
               style={{ paddingLeft: `${depth * 24 + 16}px` }}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex min-w-0 items-start gap-3">
                   {hasChildren && (
                     <button
                       onClick={() => toggleExpand(task.id)}
-                      className="text-gray-400 hover:text-gray-600"
+                      className="mt-0.5 text-gray-400 hover:text-gray-600"
                     >
                       {isExpanded ? (
                         <ChevronDown className="h-4 w-4" />
@@ -47,16 +47,35 @@ export function TaskTree({ tasks, depth = 0 }: TaskTreeProps) {
                       )}
                     </button>
                   )}
-                  {!hasChildren && <div className="w-7" />}
-                  <Link
-                    to={`/task/${task.id}`}
-                    className="font-medium text-gray-900 hover:text-blue-600"
-                  >
-                    {task.title}
-                  </Link>
-                  <span className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded">
-                    {task.type}
-                  </span>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-3">
+                      <Link
+                        to={`/task/${task.id}`}
+                        className="font-medium text-gray-900 hover:text-blue-600"
+                      >
+                        {task.title}
+                      </Link>
+                      <span className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded">
+                        {task.type}
+                      </span>
+                    </div>
+                    {task.description && (
+                      <div className="mt-2 text-sm text-gray-600">{task.description}</div>
+                    )}
+                    <div className="mt-3 flex items-center space-x-4 text-sm text-gray-500">
+                      {task.unit && task.targetValue && (
+                        <span>
+                          {task.unit}: {task.targetValue}
+                        </span>
+                      )}
+                      {task.type === 'container' && (
+                        <span>{task.totalChildren || 0} subtasks</span>
+                      )}
+                      {task.deadline && (
+                        <span>Due: {new Date(task.deadline).toLocaleDateString()}</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 <div className="flex items-center space-x-4">
                   <div className="w-48">
@@ -64,23 +83,6 @@ export function TaskTree({ tasks, depth = 0 }: TaskTreeProps) {
                   </div>
                   <div className="text-sm text-gray-500">{task.progress.toFixed(0)}%</div>
                 </div>
-              </div>
-              {task.description && (
-                <div className="mt-2 text-gray-600 text-sm" style={{ marginLeft: '28px' }}>
-                  {task.description}
-                </div>
-              )}
-              <div
-                className="mt-3 flex items-center space-x-4 text-sm text-gray-500"
-                style={{ marginLeft: '28px' }}
-              >
-                {task.unit && task.targetValue && (
-                  <span>
-                    {task.unit}: {task.targetValue}
-                  </span>
-                )}
-                {task.type === 'container' && <span>{task.totalChildren || 0} subtasks</span>}
-                {task.deadline && <span>Due: {new Date(task.deadline).toLocaleDateString()}</span>}
               </div>
             </div>
             {hasChildren && isExpanded && (
