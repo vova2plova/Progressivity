@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useTaskData, useTasksData } from '../hooks/useFeatureFlaggedData'
 import type { TaskStatus } from '../types'
 import {
@@ -16,6 +16,7 @@ import { FolderPlus, BarChart } from 'lucide-react'
 
 export function TaskPage() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const { task, isLoading, error } = useTaskData(id)
   const { updateTask } = useTasksData()
   const { task: parentTask } = useTaskData(task?.parentId || undefined)
@@ -201,6 +202,10 @@ export function TaskPage() {
         onOpenChange={setDeleteConfirmOpen}
         taskId={task.id}
         taskTitle={task.title}
+        onDeleted={() => {
+          setDeleteConfirmOpen(false)
+          navigate('/', { replace: true })
+        }}
       />
       <EditTaskForm open={editModalOpen} onOpenChange={setEditModalOpen} task={task} />
       <AddProgressForm open={addProgressOpen} onOpenChange={setAddProgressOpen} taskId={task.id} />

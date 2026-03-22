@@ -7,6 +7,7 @@ interface DeleteConfirmDialogProps {
   onOpenChange: (open: boolean) => void
   taskId: string
   taskTitle: string
+  onDeleted?: () => void
 }
 
 export function DeleteConfirmDialog({
@@ -14,6 +15,7 @@ export function DeleteConfirmDialog({
   onOpenChange,
   taskId,
   taskTitle,
+  onDeleted,
 }: DeleteConfirmDialogProps) {
   const { deleteTask } = useTasksData()
   const [isDeleting, setIsDeleting] = useState(false)
@@ -23,6 +25,7 @@ export function DeleteConfirmDialog({
     try {
       await deleteTask(taskId)
       onOpenChange(false)
+      onDeleted?.()
     } catch (error) {
       console.error('Failed to delete task:', error)
       // Optionally show error message to user
