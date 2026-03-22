@@ -75,7 +75,7 @@ func decodeCreateTaskRequest(w http.ResponseWriter, r *http.Request) (*domain.Ta
 	}
 	task, err := req.ToDomainTask()
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, dto.ErrorResponse{Error: "invalid deadline format, expected RFC3339"})
+		writeJSON(w, http.StatusBadRequest, dto.ErrorResponse{Error: "invalid deadline format"})
 		return nil, false
 	}
 	return task, true
@@ -93,7 +93,7 @@ func decodeUpdateTaskRequest(w http.ResponseWriter, r *http.Request) (*domain.Ta
 	}
 	task, err := req.ToDomainTask()
 	if err != nil {
-		writeJSON(w, http.StatusBadRequest, dto.ErrorResponse{Error: "invalid deadline format, expected RFC3339"})
+		writeJSON(w, http.StatusBadRequest, dto.ErrorResponse{Error: "invalid deadline format"})
 		return nil, false
 	}
 	return task, true

@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -16,7 +17,7 @@ type CreateTaskRequest struct {
 	Unit        *string  `json:"unit,omitempty"`
 	TargetValue *float64 `json:"target_value,omitempty"`
 	TargetCount *int     `json:"target_count,omitempty"`
-	Deadline    *string  `json:"deadline,omitempty"` // RFC3339 string
+	Deadline    *string  `json:"deadline,omitempty"` // RFC3339 or date-only (YYYY-MM-DD) string
 	Status      string   `json:"status,omitempty"`
 }
 
@@ -27,7 +28,7 @@ type UpdateTaskRequest struct {
 	Unit        *string  `json:"unit,omitempty"`
 	TargetValue *float64 `json:"target_value,omitempty"`
 	TargetCount *int     `json:"target_count,omitempty"`
-	Deadline    *string  `json:"deadline,omitempty"` // RFC3339 string
+	Deadline    *string  `json:"deadline,omitempty"` // RFC3339 or date-only (YYYY-MM-DD) string
 	Status      string   `json:"status"`
 }
 
@@ -152,6 +153,28 @@ func ProgressEntryResponseFromDomain(e *domain.ProgressEntry) ProgressEntryRespo
 	}
 }
 
+// parseDeadline parses a deadline string that can be empty, RFC3339, or date-only (YYYY-MM-DD).
+// Returns nil if the string is empty.
+func parseDeadline(s string) (*time.Time, error) {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return nil, nil
+	}
+	// Try RFC3339 first
+	t, err := time.Parse(time.RFC3339, s)
+	if err == nil {
+		return &t, nil
+	}
+	// Try date-only format (YYYY-MM-DD)
+	t, err = time.Parse("2006-01-02", s)
+	if err == nil {
+		// Set to start of day UTC
+		t = time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+		return &t, nil
+	}
+	return nil, err
+}
+
 // ToDomainTask converts a CreateTaskRequest to a domain Task.
 func (r *CreateTaskRequest) ToDomainTask() (*domain.Task, error) {
 	task := &domain.Task{
@@ -163,11 +186,11 @@ func (r *CreateTaskRequest) ToDomainTask() (*domain.Task, error) {
 	}
 
 	if r.Deadline != nil {
-		t, err := time.Parse(time.RFC3339, *r.Deadline)
+		t, err := parseDeadline(*r.Deadline)
 		if err != nil {
 			return nil, err
 		}
-		task.Deadline = &t
+		task.Deadline = t
 	}
 
 	if r.Status != "" {
@@ -189,11 +212,11 @@ func (r *UpdateTaskRequest) ToDomainTask() (*domain.Task, error) {
 	}
 
 	if r.Deadline != nil {
-		t, err := time.Parse(time.RFC3339, *r.Deadline)
+		t, err := parseDeadline(*r.Deadline)
 		if err != nil {
 			return nil, err
 		}
-		task.Deadline = &t
+		task.Deadline = t
 	}
 
 	return task, nil
