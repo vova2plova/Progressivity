@@ -69,6 +69,28 @@ npm run dev
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:8080/api/v1
 
+## Production Blueprint
+
+Фаза 1 деплоя зафиксирована как single-VPS схема через Docker Compose без домена:
+
+- `caddy` — единственная публичная точка входа на `:80`
+- frontend — production build, отдаваемый через `caddy`
+- backend — отдельный контейнер с внутренним портом `8080`
+- PostgreSQL — отдельный контейнер с persistent volume и без внешней публикации порта
+- внешние URL:
+  - UI: `http://<VPS_IP>/`
+  - API: `http://<VPS_IP>/api/v1/...`
+
+Ключевые ограничения и решения:
+
+- production-модель для frontend — same-origin, запросы остаются на относительные `/api/v1`
+- proxy в [web/vite.config.ts](/D:/git/Progressivity/web/vite.config.ts) используется только для локальной разработки
+- backend в production использует текущий контракт конфигурации и читает `SERVER_PORT` без отдельного `SERVER_HOST`
+- healthcheck для контейнеров опирается на `GET /api/v1/health`
+- миграции для production должны запускаться отдельной командой, а не во время старта backend
+
+Подробная спецификация фазы 1 находится в [docs/deployment-phase1.md](/D:/git/Progressivity/docs/deployment-phase1.md).
+
 ## Структура проекта
 
 ```
@@ -128,6 +150,7 @@ npm run lint        # линтер
 - [PRD.md](PRD.md) — требования к продукту
 - [TASKS.md](TASKS.md) — план реализации
 - [AGENTS.md](AGENTS.md) — инструкции для AI-агентов
+- [docs/deployment-phase1.md](/D:/git/Progressivity/docs/deployment-phase1.md) — зафиксированная схема первого VPS-деплоя
 
 ## Лицензия
 

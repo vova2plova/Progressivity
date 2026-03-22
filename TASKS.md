@@ -5,13 +5,20 @@
 Задачи сгруппированы по фазам. Каждая фаза должна заканчиваться проверяемым результатом.
 
 ## Фаза 1: Подготовка к деплою
-- [ ] Зафиксировать целевую схему деплоя: backend, frontend, PostgreSQL, reverse proxy
-- [ ] Определить production-стратегию запуска: Docker Compose на VPS
-- [ ] Проверить, какие переменные окружения обязательны для production
-- [ ] Создать `.env.production.example` с безопасными значениями-заглушками и пояснениями
-- [ ] Убедиться, что frontend умеет работать с production API URL
-- [ ] Убедиться, что backend корректно читает host/port/config в production-режиме
-- [ ] Описать минимальные системные требования VPS (RAM, CPU, disk)
+- [x] Зафиксировать целевую схему деплоя: backend, frontend, PostgreSQL, reverse proxy
+- [x] Определить production-стратегию запуска: Docker Compose на VPS
+- [x] Проверить, какие переменные окружения обязательны для production
+- [x] Убедиться, что frontend умеет работать с production API URL
+- [x] Убедиться, что backend корректно читает host/port/config в production-режиме
+- [x] Описать минимальные системные требования VPS (RAM, CPU, disk)
+
+Результат фазы 1 зафиксирован в [docs/deployment-phase1.md](/D:/git/Progressivity/docs/deployment-phase1.md):
+
+- reverse proxy: `Caddy`
+- production URL-модель: `http://<VPS_IP>/` и `http://<VPS_IP>/api/v1/...`
+- frontend остаётся на относительном `/api/v1`
+- backend использует текущий `SERVER_PORT` без `SERVER_HOST`
+- наружу в production публикуется только reverse proxy
 
 ## Фаза 2: Production packaging
 - [ ] Написать production `Dockerfile` для backend
