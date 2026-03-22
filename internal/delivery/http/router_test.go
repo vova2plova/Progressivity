@@ -644,6 +644,35 @@ func TestHandler_AddProgress_InvalidValue(t *testing.T) {
 	}
 }
 
+func TestHandler_AddProgress_NegativeValue(t *testing.T) {
+	env := setupTestEnv()
+	userID := uuid.New()
+	taskID := uuid.New()
+	target := 100.0
+	token := env.generateAuthToken(userID)
+
+	env.taskRepo.AddTask(&domain.Task{
+		ID: taskID, UserID: userID, Title: "Task", TargetValue: &target, Status: domain.TaskStatusInProgress,
+	})
+
+	body := jsonBody(t, dto.CreateProgressRequest{Value: -5.0})
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/tasks/"+taskID.String()+"/progress", body)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+token)
+	rec := httptest.NewRecorder()
+
+	env.router.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusCreated {
+		t.Fatalf("expected status 201, got %d: %s", rec.Code, rec.Body.String())
+	}
+
+	resp := parseJSON[dto.ProgressEntryResponse](t, rec)
+	if resp.Value != -5.0 {
+		t.Errorf("expected value -5.0, got %f", resp.Value)
+	}
+}
+
 func TestHandler_ListProgress_Success(t *testing.T) {
 	env := setupTestEnv()
 	userID := uuid.New()

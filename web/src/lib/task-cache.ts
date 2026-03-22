@@ -80,7 +80,9 @@ export function replaceTaskById(
 ): TaskWithProgress[] | undefined {
   if (!tasks) return tasks
 
-  return tasks.map((task) => (task.id === taskId ? nextTask : replaceTaskNode(task, taskId, nextTask)))
+  return tasks.map((task) =>
+    task.id === taskId ? nextTask : replaceTaskNode(task, taskId, nextTask),
+  )
 }
 
 function replaceTaskNode(
@@ -191,10 +193,18 @@ export function updateProgressSnapshot(
   }
 
   const targetValue = task.targetValue && task.targetValue > 0 ? task.targetValue : 1
-  const nextCurrentValue = Math.max(0, (task.currentValue ?? 0) + deltaValue)
-  const nextProgress = Math.max(0, Math.min(100, (nextCurrentValue / targetValue) * 100))
+  const baseCurrentValue =
+    typeof task.currentValue === 'number' ? task.currentValue : (task.progress / 100) * targetValue
+  const nextCurrentValue = baseCurrentValue + deltaValue
+  const nextProgress = (nextCurrentValue / targetValue) * 100
   const nextStatus: TaskStatus =
-    nextProgress >= 100 ? 'completed' : nextProgress > 0 ? 'in_progress' : task.status
+    nextProgress > 100
+      ? 'overcompleted'
+      : nextProgress >= 100
+        ? 'completed'
+        : nextProgress > 0
+          ? 'in_progress'
+          : task.status
 
   return {
     ...task,

@@ -5,7 +5,7 @@ import { useProgressData } from '../hooks/useFeatureFlaggedData'
 import { todayDateInputValue } from '../lib/date'
 import { getErrorMessage } from '../lib/error'
 import type { CreateProgressRequest } from '../types'
-import { useToast } from './ToastProvider'
+import { useToast } from './toast-context'
 
 interface AddProgressFormProps {
   open: boolean
@@ -76,12 +76,11 @@ export function AddProgressForm({ open, onOpenChange, taskId }: AddProgressFormP
               <input
                 type="number"
                 required
-                min="0"
                 step="any"
                 className="w-full border border-gray-300 rounded-lg px-3 py-2"
                 value={valueInput}
                 onChange={(e) => handleValueChange(e.target.value)}
-                placeholder="0"
+                placeholder="e.g. 15 or -5"
               />
             </div>
 
@@ -92,7 +91,7 @@ export function AddProgressForm({ open, onOpenChange, taskId }: AddProgressFormP
                 rows={3}
                 value={form.note}
                 onChange={(e) => handleChange('note', e.target.value)}
-                placeholder="What did you accomplish?"
+                placeholder="What changed since the last update?"
               />
             </div>
 

@@ -1,11 +1,12 @@
 export type UUID = string
 
-export type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'cancelled'
+export type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'overcompleted' | 'canceled'
 export const TaskStatus = {
   PENDING: 'pending' as TaskStatus,
   IN_PROGRESS: 'in_progress' as TaskStatus,
   COMPLETED: 'completed' as TaskStatus,
-  CANCELLED: 'cancelled' as TaskStatus,
+  OVERCOMPLETED: 'overcompleted' as TaskStatus,
+  CANCELED: 'canceled' as TaskStatus,
 }
 
 export type TaskType = 'container' | 'leaf'
@@ -49,8 +50,8 @@ export interface ProgressEntry {
 }
 
 export interface TaskWithProgress extends Task {
-  progress: number // 0-100 percentage
-  currentValue?: number
+  progress: number // may be negative or exceed 100 for overcompletion
+  currentValue?: number // may be negative
   completedChildren?: number
   totalChildren?: number
   children?: TaskWithProgress[] // for tree view

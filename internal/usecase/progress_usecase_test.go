@@ -52,6 +52,35 @@ func TestProgressUsecase_AddProgress_Success(t *testing.T) {
 	}
 }
 
+func TestProgressUsecase_AddProgress_NegativeValue(t *testing.T) {
+	uc, taskRepo, _ := newProgressUsecaseWithMocks()
+	userID := uuid.New()
+	taskID := uuid.New()
+	target := 100.0
+
+	taskRepo.AddTask(&domain.Task{
+		ID:          taskID,
+		UserID:      userID,
+		Title:       "Undo progress",
+		TargetValue: &target,
+		Status:      domain.TaskStatusInProgress,
+	})
+
+	entry := &domain.ProgressEntry{
+		Value:      -5.0,
+		RecordedAt: time.Now(),
+	}
+
+	created, err := uc.AddProgress(context.Background(), userID, taskID, entry)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if created.Value != -5.0 {
+		t.Errorf("expected value -5.0, got %f", created.Value)
+	}
+}
+
 func TestProgressUsecase_AddProgress_TaskNotFound(t *testing.T) {
 	uc, _, _ := newProgressUsecaseWithMocks()
 

@@ -1,4 +1,3 @@
-import * as Progress from '@radix-ui/react-progress'
 import type { TaskWithProgress } from '../types'
 
 interface ProgressBarProps {
@@ -18,11 +17,17 @@ export function ProgressBar({ task, showLabel = true, size = 'md' }: ProgressBar
     lg: 'h-4',
   }[size]
 
+  const negativeWidth = `${Math.min(Math.abs(Math.min(progress, 0)), 100)}%`
+  const positiveWidth = `${Math.min(Math.max(progress, 0), 100)}%`
+  const overWidth = `${Math.min(Math.max(progress - 100, 0), 100)}%`
+
   const getColor = (percent: number) => {
+    if (percent > 100) return 'bg-emerald-500'
     if (percent >= 100) return 'bg-green-500'
     if (percent >= 75) return 'bg-green-400'
     if (percent >= 50) return 'bg-yellow-400'
     if (percent > 0) return 'bg-blue-400'
+    if (percent < 0) return 'bg-rose-500'
     return 'bg-gray-300'
   }
 
@@ -62,15 +67,29 @@ export function ProgressBar({ task, showLabel = true, size = 'md' }: ProgressBar
   return (
     <div className="w-full">
       {renderLabel()}
-      <Progress.Root
-        className={`relative overflow-hidden bg-gray-200 rounded-full w-full ${heightClass}`}
-        value={progress}
-      >
-        <Progress.Indicator
-          className={`w-full h-full transition-all duration-300 ${getColor(progress)}`}
-          style={{ transform: `translateX(-${100 - progress}%)` }}
-        />
-      </Progress.Root>
+      <div className={`grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_3.5rem] ${heightClass}`}>
+        <div className="relative overflow-hidden rounded-l-full bg-rose-100">
+          <div
+            data-testid="negative-progress-indicator"
+            className={`absolute top-0 right-0 h-full transition-all duration-300 ${getColor(progress)}`}
+            style={{ width: negativeWidth }}
+          />
+        </div>
+        <div className="relative overflow-hidden bg-gray-200">
+          <div
+            data-testid="positive-progress-indicator"
+            className={`absolute top-0 left-0 h-full transition-all duration-300 ${getColor(Math.max(progress, 0))}`}
+            style={{ width: positiveWidth }}
+          />
+        </div>
+        <div className="relative overflow-hidden rounded-r-full bg-emerald-100">
+          <div
+            data-testid="over-progress-indicator"
+            className="absolute top-0 left-0 h-full bg-emerald-500 transition-all duration-300"
+            style={{ width: overWidth }}
+          />
+        </div>
+      </div>
       {isContainer && task.totalChildren! > 0 && (
         <div className="text-xs text-gray-500 mt-1">
           Average progress across {task.totalChildren} subtasks

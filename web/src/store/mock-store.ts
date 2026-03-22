@@ -52,12 +52,24 @@ export class MockStore {
 
     const progress = this.calculateTaskProgress(id)
     const children = this.getChildrenIds(id)
+    const resolvedStatus =
+      task.type === TaskType.LEAF && task.targetValue !== null
+        ? progress > 1
+          ? TaskStatus.OVERCOMPLETED
+          : progress >= 1
+            ? TaskStatus.COMPLETED
+            : progress > 0
+              ? TaskStatus.IN_PROGRESS
+              : task.status
+        : task.status
+
     return {
       ...task,
+      status: resolvedStatus,
       progress: progress * 100, // convert to percentage
       completedChildren: children.filter((childId) => {
-        const child = this.tasks.get(childId)
-        return child?.status === TaskStatus.COMPLETED
+        const child = this.getTaskWithProgress(childId)
+        return child?.status === TaskStatus.COMPLETED || child?.status === TaskStatus.OVERCOMPLETED
       }).length,
       totalChildren: children.length,
       children: children.map((childId) => this.getTaskWithProgress(childId)!),
@@ -181,12 +193,14 @@ export class MockStore {
         (sum, entry) => sum + entry.value,
         0,
       )
-      return Math.min(total / task.targetValue, 1)
+      return total / task.targetValue
     }
 
     // Binary leaf (no target value)
     if (task.type === TaskType.LEAF) {
-      return task.status === TaskStatus.COMPLETED ? 1 : 0
+      return task.status === TaskStatus.COMPLETED || task.status === TaskStatus.OVERCOMPLETED
+        ? 1
+        : 0
     }
 
     // Container: average of children's progress

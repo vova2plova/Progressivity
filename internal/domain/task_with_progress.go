@@ -15,7 +15,7 @@ const maxProgressPercent = 100.0
 // CalculateProgress recursively computes progress for the entire task tree.
 //
 // Rules:
-//   - Leaf + target_value:  progress = currentValue / targetValue * 100 (capped at 100)
+//   - Leaf + target_value:  progress = currentValue / targetValue * 100
 //   - Leaf binary (no target): progress = 100% if completed, 0% otherwise
 //   - Container: progress = avg(children.progress)
 func CalculateProgress(node *TaskWithProgress) {
@@ -23,10 +23,15 @@ func CalculateProgress(node *TaskWithProgress) {
 		// Leaf node
 		if node.TargetValue != nil && *node.TargetValue > 0 {
 			node.Progress = node.CurrentValue / *node.TargetValue * maxProgressPercent
-			if node.Progress > maxProgressPercent {
-				node.Progress = maxProgressPercent
+			switch {
+			case node.Progress > maxProgressPercent:
+				node.Status = TaskStatusOvercompleted
+			case node.Progress >= maxProgressPercent:
+				node.Status = TaskStatusCompleted
+			case node.Progress > 0:
+				node.Status = TaskStatusInProgress
 			}
-		} else if node.Status == TaskStatusCompleted {
+		} else if node.Status == TaskStatusCompleted || node.Status == TaskStatusOvercompleted {
 			node.Progress = maxProgressPercent
 		}
 		return

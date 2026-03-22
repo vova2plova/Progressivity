@@ -47,6 +47,7 @@ const leafTask: TaskWithProgress = {
   createdAt: '2026-03-22T00:00:00.000Z',
   updatedAt: '2026-03-22T00:00:00.000Z',
   progress: 20,
+  currentValue: 20,
 }
 
 const existingEntry: ProgressEntry = {
@@ -89,12 +90,17 @@ describe('useProgressQuery optimistic updates', () => {
     })
 
     await waitFor(() => {
-      const optimisticEntries = queryClient.getQueryData<ProgressEntry[]>(PROGRESS_KEYS.byTask(leafTask.id))
+      const optimisticEntries = queryClient.getQueryData<ProgressEntry[]>(
+        PROGRESS_KEYS.byTask(leafTask.id),
+      )
       expect(optimisticEntries).toHaveLength(2)
       expect(optimisticEntries?.[1].isOptimistic).toBe(true)
 
-      const optimisticTask = queryClient.getQueryData<TaskWithProgress>(TASK_KEYS.detail(leafTask.id))
+      const optimisticTask = queryClient.getQueryData<TaskWithProgress>(
+        TASK_KEYS.detail(leafTask.id),
+      )
       expect(optimisticTask?.progress).toBe(35)
+      expect(optimisticTask?.currentValue).toBe(35)
     })
 
     deferred.resolve({
@@ -110,8 +116,80 @@ describe('useProgressQuery optimistic updates', () => {
       expect(result.current.isSuccess).toBe(true)
     })
 
-    const settledEntries = queryClient.getQueryData<ProgressEntry[]>(PROGRESS_KEYS.byTask(leafTask.id))
+    const settledEntries = queryClient.getQueryData<ProgressEntry[]>(
+      PROGRESS_KEYS.byTask(leafTask.id),
+    )
     expect(settledEntries?.[1].id).toBe('progress-2')
+  })
+
+  it('allows negative optimistic progress without clamping to zero', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    })
+    queryClient.setQueryData(PROGRESS_KEYS.byTask(leafTask.id), [existingEntry])
+    queryClient.setQueryData(TASK_KEYS.detail(leafTask.id), leafTask)
+    queryClient.setQueryData(TASK_KEYS.tree(leafTask.id), leafTask)
+
+    const deferred = createDeferred<ProgressEntry>()
+    vi.mocked(progressApi.addProgress).mockReturnValue(deferred.promise)
+
+    const { result } = renderHook(() => useAddProgress(), {
+      wrapper: createWrapper(queryClient),
+    })
+
+    act(() => {
+      result.current.mutate({
+        taskId: leafTask.id,
+        data: { value: -35, note: 'Correction', recordedAt: '2026-03-22' },
+      })
+    })
+
+    await waitFor(() => {
+      const optimisticTask = queryClient.getQueryData<TaskWithProgress>(
+        TASK_KEYS.detail(leafTask.id),
+      )
+      expect(optimisticTask?.progress).toBe(-15)
+      expect(optimisticTask?.currentValue).toBe(-15)
+      expect(optimisticTask?.status).toBe('in_progress')
+    })
+  })
+
+  it('marks optimistic overcompletion when progress exceeds one hundred percent', async () => {
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    })
+    queryClient.setQueryData(PROGRESS_KEYS.byTask(leafTask.id), [existingEntry])
+    queryClient.setQueryData(TASK_KEYS.detail(leafTask.id), leafTask)
+    queryClient.setQueryData(TASK_KEYS.tree(leafTask.id), leafTask)
+
+    const deferred = createDeferred<ProgressEntry>()
+    vi.mocked(progressApi.addProgress).mockReturnValue(deferred.promise)
+
+    const { result } = renderHook(() => useAddProgress(), {
+      wrapper: createWrapper(queryClient),
+    })
+
+    act(() => {
+      result.current.mutate({
+        taskId: leafTask.id,
+        data: { value: 115, note: 'Finished extra', recordedAt: '2026-03-22' },
+      })
+    })
+
+    await waitFor(() => {
+      const optimisticTask = queryClient.getQueryData<TaskWithProgress>(
+        TASK_KEYS.detail(leafTask.id),
+      )
+      expect(optimisticTask?.progress).toBe(135)
+      expect(optimisticTask?.currentValue).toBe(135)
+      expect(optimisticTask?.status).toBe('overcompleted')
+    })
   })
 
   it('rolls back deleted progress when mutation fails', async () => {
@@ -138,7 +216,9 @@ describe('useProgressQuery optimistic updates', () => {
 
     await waitFor(() => {
       expect(queryClient.getQueryData(PROGRESS_KEYS.byTask(leafTask.id))).toEqual([])
-      expect(queryClient.getQueryData<TaskWithProgress>(TASK_KEYS.detail(leafTask.id))?.progress).toBe(0)
+      expect(
+        queryClient.getQueryData<TaskWithProgress>(TASK_KEYS.detail(leafTask.id))?.progress,
+      ).toBe(0)
     })
 
     deferred.reject(new Error('delete failed'))
@@ -148,6 +228,8 @@ describe('useProgressQuery optimistic updates', () => {
     })
 
     expect(queryClient.getQueryData(PROGRESS_KEYS.byTask(leafTask.id))).toEqual([existingEntry])
-    expect(queryClient.getQueryData<TaskWithProgress>(TASK_KEYS.detail(leafTask.id))?.progress).toBe(20)
+    expect(
+      queryClient.getQueryData<TaskWithProgress>(TASK_KEYS.detail(leafTask.id))?.progress,
+    ).toBe(20)
   })
 })

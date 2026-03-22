@@ -9,6 +9,8 @@ interface TaskCardProps {
 export function TaskCard({ task }: TaskCardProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
+      case 'overcompleted':
+        return 'bg-emerald-100 text-emerald-800'
       case 'completed':
         return 'bg-green-100 text-green-800'
       case 'in_progress':

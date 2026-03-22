@@ -105,8 +105,8 @@ func decodeProgressRequest(w http.ResponseWriter, r *http.Request) (*domain.Prog
 	if !decodeBody(w, r, &req) {
 		return nil, false
 	}
-	if req.Value <= 0 {
-		writeJSON(w, http.StatusBadRequest, dto.ErrorResponse{Error: "value must be positive"})
+	if req.Value == 0 {
+		writeJSON(w, http.StatusBadRequest, dto.ErrorResponse{Error: "value must not be zero"})
 		return nil, false
 	}
 	entry, err := req.ToDomainProgressEntry()

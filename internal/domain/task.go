@@ -9,10 +9,11 @@ import (
 type TaskStatus string
 
 const (
-	TaskStatusPending    TaskStatus = "pending"
-	TaskStatusInProgress TaskStatus = "in_progress"
-	TaskStatusCompleted  TaskStatus = "completed"
-	TaskStatusCanceled   TaskStatus = "canceled"
+	TaskStatusPending       TaskStatus = "pending"
+	TaskStatusInProgress    TaskStatus = "in_progress"
+	TaskStatusCompleted     TaskStatus = "completed"
+	TaskStatusOvercompleted TaskStatus = "overcompleted"
+	TaskStatusCanceled      TaskStatus = "canceled"
 )
 
 type Task struct {

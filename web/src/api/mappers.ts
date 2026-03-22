@@ -36,15 +36,11 @@ function resolveTaskProgress(task: ApiTask): number {
   const currentValue = task.current_value ?? 0
   const targetValue = task.target_value ?? 1
 
-  if (typeof task.progress === 'number' && task.progress > 0) {
+  if (typeof task.progress === 'number') {
     return task.progress
   }
 
-  if (currentValue <= 0) {
-    return task.progress ?? 0
-  }
-
-  return Math.max(0, Math.min(100, (currentValue / targetValue) * 100))
+  return (currentValue / targetValue) * 100
 }
 
 interface ApiProgressEntry {
