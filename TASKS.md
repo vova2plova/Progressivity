@@ -21,15 +21,15 @@
 - наружу в production публикуется только reverse proxy
 
 ## Фаза 2: Production packaging
-- [ ] Написать production `Dockerfile` для backend
-- [ ] Написать production `Dockerfile` для frontend
-- [ ] Добавить `.dockerignore` для backend и frontend, если нужно
-- [ ] Создать `docker-compose.prod.yml` для VPS-окружения
-- [ ] Настроить внутреннюю сеть между сервисами без лишней публикации портов
-- [ ] Подключить persistent volume для PostgreSQL
-- [ ] Добавить healthcheck для backend
-- [ ] Добавить healthcheck для frontend или reverse proxy
-- [ ] Проверить локально production-сборку через `docker compose -f docker-compose.prod.yml up`
+- [x] Написать production `Dockerfile` для backend
+- [x] Написать production `Dockerfile` для frontend
+- [x] Добавить `.dockerignore` для backend и frontend, если нужно
+- [x] Создать `docker-compose.prod.yml` для VPS-окружения
+- [x] Настроить внутреннюю сеть между сервисами без лишней публикации портов
+- [x] Подключить persistent volume для PostgreSQL
+- [x] Добавить healthcheck для backend
+- [x] Добавить healthcheck для frontend или reverse proxy
+- [x] Проверить локально production-сборку через `docker compose -f docker-compose.prod.yml up`
 
 ## Фаза 3: Конфигурация VPS
 - [ ] Подготовить пользователя для деплоя на VPS

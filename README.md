@@ -91,6 +91,31 @@ npm run dev
 
 Подробная спецификация фазы 1 находится в [docs/deployment-phase1.md](/D:/git/Progressivity/docs/deployment-phase1.md).
 
+## Production Packaging
+
+Для локальной проверки production-like сборки:
+
+```bash
+# Собрать production-образы
+docker compose -f docker-compose.prod.yml build
+
+# Поднять PostgreSQL
+docker compose -f docker-compose.prod.yml up -d postgres
+
+# Отдельно применить миграции
+docker compose -f docker-compose.prod.yml run --rm migrate up
+
+# Поднять backend и Caddy
+docker compose -f docker-compose.prod.yml up -d backend caddy
+```
+
+Production packaging во второй фазе использует:
+
+- корневой [Dockerfile](/D:/git/Progressivity/Dockerfile) для backend
+- [web/Dockerfile](/D:/git/Progressivity/web/Dockerfile) для frontend runtime на `Caddy`
+- [web/Caddyfile](/D:/git/Progressivity/web/Caddyfile) для SPA + reverse proxy
+- [docker-compose.prod.yml](/D:/git/Progressivity/docker-compose.prod.yml) для production-like запуска
+
 ## Структура проекта
 
 ```
