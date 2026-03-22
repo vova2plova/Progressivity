@@ -1,207 +1,78 @@
-# TASKS.md — План реализации
+# TASKS.md — Следующий этап развития
 
-Задачи разбиты по фазам. Каждая фаза — логически завершённый этап, после которого можно проверить результат.
+Предыдущий план реализации закрыт. Ниже — новый roadmap для ближайшего этапа: первый production-like деплой на VPS без домена, затем стабилизация и подготовка к публичному запуску.
 
-## Фаза 0: Инициализация проекта
-- [x] Инициализировать Go-модуль (`go mod init`)
-- [x] Создать структуру директорий (cmd, internal, migrations, pkg, web)
-- [x] Настроить Docker Compose (PostgreSQL 18)
-- [x] Создать Makefile с базовыми командами (build, run, migrate, test)
-- [x] Инициализировать Vite + React + TypeScript проект в `web/`
-- [x] Настроить Tailwind CSS и Radix UI
-- [x] Настроить ESLint + Prettier для frontend
-- [x] Создать .env.example с переменными окружения
-- [x] Настроить пакет config (чтение env/файлов конфигурации)
-- [x] Настроить структурированное логирование (slog)
+Задачи сгруппированы по фазам. Каждая фаза должна заканчиваться проверяемым результатом.
 
-## Фаза 1: База данных и миграции
-- [x] Написать миграцию `000001_create_users` (up/down)
-- [x] Написать миграцию `000002_create_tasks` (up/down) — с self-reference FK
-- [x] Написать миграцию `000003_create_progress_entries` (up/down)
-- [x] Настроить подключение к PostgreSQL (`infrastructure/postgres/connection.go`)
-- [x] Добавить команду миграции в Makefile (`make migrate-up`, `make migrate-down`)
-- [x] Проверить миграции: up -> down -> up без ошибок
+## Фаза 1: Подготовка к деплою
+- [ ] Зафиксировать целевую схему деплоя: backend, frontend, PostgreSQL, reverse proxy
+- [ ] Определить production-стратегию запуска: Docker Compose на VPS
+- [ ] Проверить, какие переменные окружения обязательны для production
+- [ ] Создать `.env.production.example` с безопасными значениями-заглушками и пояснениями
+- [ ] Убедиться, что frontend умеет работать с production API URL
+- [ ] Убедиться, что backend корректно читает host/port/config в production-режиме
+- [ ] Описать минимальные системные требования VPS (RAM, CPU, disk)
 
-## Фаза 2: Domain layer
-- [x] Определить `User` entity (`internal/domain/user.go`)
-- [x] Определить `Task` entity с полями для рекурсивной структуры (`internal/domain/task.go`)
-- [x] Определить `ProgressEntry` entity (`internal/domain/task.go`)
-- [x] Определить `TaskWithProgress` — расширенная структура с вычисляемыми полями
-- [x] Определить доменные ошибки (`internal/domain/errors.go`)
-- [x] Определить интерфейс `TaskRepository` (`internal/repository/task_repository.go`)
-- [x] Определить интерфейс `ProgressEntryRepository` (`internal/repository/progress_entry.go`)
-- [x] Определить интерфейс `UserRepository` (`internal/repository/user_repository.go`)
+## Фаза 2: Production packaging
+- [ ] Написать production `Dockerfile` для backend
+- [ ] Написать production `Dockerfile` для frontend
+- [ ] Добавить `.dockerignore` для backend и frontend, если нужно
+- [ ] Создать `docker-compose.prod.yml` для VPS-окружения
+- [ ] Настроить внутреннюю сеть между сервисами без лишней публикации портов
+- [ ] Подключить persistent volume для PostgreSQL
+- [ ] Добавить healthcheck для backend
+- [ ] Добавить healthcheck для frontend или reverse proxy
+- [ ] Проверить локально production-сборку через `docker compose -f docker-compose.prod.yml up`
 
-## Фаза 3: Infrastructure layer — репозитории
-- [x] Реализовать `UserRepository` для PostgreSQL
-  - [x] Create
-  - [x] GetByID
-  - [x] GetByEmail
-  - [x] GetByUsername
-- [x] Реализовать `TaskRepository` для PostgreSQL
-  - [x] Create
-  - [x] GetByID
-  - [x] Update
-  - [x] Delete (каскадное через FK)
-  - [x] ListByParentID (дочерние задачи)
-  - [x] ListRootByUserID (top-level задачи)
-  - [x] GetTreeByID (рекурсивный запрос — CTE)
-  - [x] UpdatePosition
-- [x] Реализовать `ProgressEntryRepository`
-  - [x] Create
-  - [x] Delete
-  - [x] ListByTaskID
-  - [x] SumByTaskID
+## Фаза 3: Конфигурация VPS
+- [ ] Подготовить пользователя для деплоя на VPS
+- [ ] Настроить SSH-доступ по ключу и отключить вход по паролю, если ещё не сделано
+- [ ] Установить Docker Engine и Docker Compose plugin на VPS
+- [ ] Настроить firewall: оставить только SSH и публичный HTTP-порт
+- [ ] Создать директорию приложения на VPS
+- [ ] Подготовить production `.env` на сервере без коммита в репозиторий
+- [ ] Описать пошаговую инструкцию первого запуска на чистом VPS
 
-## Фаза 4: Auth (JWT)
-- [x] Реализовать JWT-менеджер (`infrastructure/auth/jwt.go`)
-  - [x] GenerateAccessToken
-  - [x] GenerateRefreshToken
-  - [x] ValidateAccessToken
-  - [x] ValidateRefreshToken
-- [x] Реализовать `AuthUsecase` (`usecase/auth_usecase.go`)
-  - [x] Register (валидация, хеширование пароля, сохранение)
-  - [x] Login (проверка credentials, генерация токенов)
-  - [x] Refresh (валидация refresh token, генерация новой пары)
-  - [x] Logout (инвалидация refresh token)
-- [x] Реализовать Auth middleware (`delivery/http/middleware/auth_middleware.go`)
-- [x] Реализовать Auth handler (`delivery/http/handler/auth_handler.go`)
-- [x] Определить Auth DTO (`delivery/http/dto/auth_dto.go`)
+## Фаза 4: Первый деплой без домена
+- [ ] Выбрать способ внешнего доступа без домена: по IP через reverse proxy
+- [ ] Настроить reverse proxy (Nginx или Caddy) перед frontend/backend
+- [ ] Отдать frontend как статические файлы через reverse proxy или отдельный контейнер
+- [ ] Проксировать API-запросы на backend
+- [ ] Открыть приложение по публичному IP VPS
+- [ ] Проверить сценарий: регистрация, логин, создание задачи, добавление прогресса
+- [ ] Проверить, что refresh/access token flow работает в production-окружении
+- [ ] Проверить CORS, cookies/headers и base URL в production
 
-## Фаза 5: Task Usecase
-- [x] Реализовать `TaskUsecase` (`usecase/task_usecase.go`)
-  - [x] CreateTask (top-level)
-  - [x] CreateChildTask (с проверкой владельца родителя)
-  - [x] GetTask (с расчётом прогресса)
-  - [x] UpdateTask
-  - [x] DeleteTask (проверка владельца)
-  - [x] ListRootTasks
-  - [x] ListChildren
-  - [x] GetTree (рекурсивный расчёт прогресса)
-  - [x] ReorderTask
-- [x] Реализовать алгоритм рекурсивного расчёта прогресса
-  - [x] Leaf + target_value: sum(entries) / target
-  - [x] Leaf бинарная: 0% / 100%
-  - [x] Container: avg(children)
-  - [x] Комбо: completed_children / total_children + avg %
-- [x] Реализовать `ProgressUsecase`
-  - [x] AddProgress (проверка: только leaf-задачи)
-  - [x] DeleteProgress
-  - [x] ListProgress
+## Фаза 5: Эксплуатационный минимум
+- [ ] Настроить автоматический рестарт контейнеров
+- [ ] Настроить логи контейнеров и описать, как их смотреть на VPS
+- [ ] Подготовить команду или скрипт для применения миграций на сервере
+- [ ] Проверить деплой на пустой базе данных
+- [ ] Подготовить стратегию резервного копирования PostgreSQL
+- [ ] Подготовить инструкцию восстановления из backup
+- [ ] Зафиксировать процедуру обновления приложения без простоя или с минимальным простоем
 
-## Фаза 6: HTTP Delivery layer
-- [x] Определить Task DTO (`delivery/http/dto/task_dto.go`)
-  - [x] CreateTaskRequest / CreateTaskResponse
-  - [x] UpdateTaskRequest
-  - [x] TaskResponse (с прогрессом)
-  - [x] TaskTreeResponse (рекурсивный)
-  - [x] ProgressEntryRequest / ProgressEntryResponse
-- [x] Реализовать Task handler (`delivery/http/handler/task_handler.go`)
-  - [x] GET    /tasks
-  - [x] POST   /tasks
-  - [x] GET    /tasks/:id
-  - [x] PUT    /tasks/:id
-  - [x] DELETE /tasks/:id
-  - [x] GET    /tasks/:id/children
-  - [x] POST   /tasks/:id/children
-  - [x] GET    /tasks/:id/tree
-  - [x] PATCH  /tasks/:id/reorder
-  - [x] GET    /tasks/:id/progress
-  - [x] POST   /tasks/:id/progress
-  - [x] DELETE /progress/:id
-- [x] Настроить роутер (`delivery/http/router.go`)
-- [x] Подключить middleware (auth, CORS, logging, recovery)
-
-## Фаза 7: Интеграция Backend
-- [x] Собрать всё в `cmd/api/main.go` (dependency injection)
-- [x] Добавить graceful shutdown
-- [x] Добавить CORS для frontend dev server
-- [x] Написать unit-тесты для usecase (мок репозиториев)
-- [x] Написать handler-тесты с httptest
-
-## Фаза 8: Frontend на моках — типы и in-memory store
-- [x] Определить TypeScript-типы (`web/src/types/`)
-  - [x] User
-  - [x] Task, TaskWithProgress, TaskStatus
-  - [x] ProgressEntry
-  - [x] CreateTaskRequest, UpdateTaskRequest, CreateProgressRequest
-- [x] Реализовать in-memory mock store (`web/src/store/mock-store.ts`)
-  - [x] Хранилище задач и progress entries (Map или массив)
-  - [x] CRUD-операции: createTask, updateTask, deleteTask (каскадно)
-  - [x] getTasksByParentId, getRootTasks, getTaskTree
-  - [x] addProgress, deleteProgress, getProgressByTaskId
-  - [x] Рекурсивный расчёт прогресса на клиенте
-- [x] Заполнить mock store реалистичными seed-данными
-  - [x] Цель "Прочитать 10 книг" с несколькими книгами и progress entries
-  - [x] Цель "Пробежать 500 км" с месячными подзадачами
-  - [x] Бинарная задача для проверки done/not done
-- [x] React Context для mock store с реактивными обновлениями
-
-## Фаза 9: Frontend на моках — UI компоненты
-- [x] Настроить React Router (маршруты: dashboard, task/:id)
-- [x] Создать layout с навигацией и заглушкой юзера
-- [x] Прогресс-бар компонент (`ProgressBar`)
-  - [x] Процент + полоска
-  - [x] Комбинированный: "3/10 завершено, 35%"
-  - [x] Цветовая индикация (зелёный при 100%, жёлтый в процессе)
-- [x] Компонент карточки задачи (`TaskCard`)
-  - [x] Title, description, status badge
-  - [x] Progress bar или "done/not done"
-  - [x] Unit info (если есть): "120 / 300 pages"
-  - [x] Количество подзадач
-- [x] Компонент дерева задач (`TaskTree`) — рекурсивный рендеринг
-- [x] Модальное окно / форма создания задачи (`CreateTaskForm`)
-  - [x] Title, description, unit, target_value, deadline
-  - [x] Валидация полей
-- [x] Модальное окно / форма редактирования задачи (`EditTaskForm`)
-- [x] Диалог подтверждения удаления (`DeleteConfirmDialog`)
-- [x] Форма добавления прогресса (`AddProgressForm`)
-  - [x] Value, note, date (по умолчанию — сегодня)
-- [x] Список записей прогресса (`ProgressHistory`)
-
-## Фаза 10: Frontend на моках — страницы
-- [x] Страница Dashboard
-  - [x] Список top-level задач (карточки с прогресс-барами)
-  - [x] Кнопка "Создать цель"
-  - [x] Empty state: "Нет целей. Создайте первую!"
-- [x] Страница задачи (`TaskPage`)
-  - [x] Заголовок задачи с прогрессом
-  - [x] Дерево подзадач (рекурсивное)
-  - [x] Кнопка "Добавить подзадачу"
-  - [x] Панель прогресса (для leaf-задач): форма + история
-  - [x] Редактирование / удаление задачи
-  - [x] Изменение статуса задачи
-  - [x] Навигация: breadcrumbs (parent -> current)
-- [x] Проверить полный flow на моках: создать цель -> подзадачи -> добавить прогресс -> видеть обновление
-
-## Фаза 11: Frontend — интеграция с Backend API
-- [x] Настроить TanStack Query (QueryClientProvider)
-- [x] Создать API-клиент (`web/src/api/client.ts`) с interceptors для JWT
-- [x] Реализовать API-функции (`web/src/api/tasks.ts`, `web/src/api/auth.ts`, `web/src/api/progress.ts`)
-- [x] Заменить mock store на API hooks
-  - [x] useTasks, useTask, useTaskTree
-  - [x] useCreateTask, useUpdateTask, useDeleteTask
-  - [x] useProgress, useAddProgress, useDeleteProgress
-- [x] Feature flag / переключатель: моки ↔ реальный API (для разработки)
-
-## Фаза 12: Frontend — Auth ✅
-- [x] Страница регистрации
-- [x] Страница логина
-- [x] Auth context / store (хранение tokens, auto-refresh)
-- [x] Protected routes (редирект на логин если не авторизован)
-- [x] API hooks: useLogin, useRegister, useLogout
-
-## Фаза 13: Полировка
-- [x] Адаптивный дизайн (мобильная версия) — базовая адаптивность есть
-- [x] Loading states (базовые) — скелетоны требуют доработки
-- [x] Error handling (базовое) — toast-уведомления требуют реализации
-- [x] Empty states (для основных списков) — улучшены с компонентом EmptyState и иконками
-- [ ] Оптимистичные обновления (TanStack Query) — требуется реализация
+## Фаза 6: После первого успешного релиза
+- [ ] Подключить домен
+- [ ] Настроить HTTPS через Let's Encrypt
+- [ ] Закрыть прямой доступ к backend-порту извне
+- [ ] Добавить CI/CD для сборки и выкладки на VPS
+- [ ] Настроить базовый мониторинг и алерты
+- [ ] Добавить smoke-check после деплоя
+- [ ] Обновить README: локальный запуск + production deployment guide
 
 ---
 
-## Приоритеты
+## Ближайший приоритет
 
-- **P0 (Must Have)**: Фазы 0-7 (backend) + Фазы 8-10 (frontend на моках)
-- **P1 (Should Have)**: Фазы 11-12 (интеграция с API, auth) ✅, Фаза 13 (полировка, частично)
-- **P2 (Nice to Have)**: Графики прогресса, дедлайн-индикаторы, пользовательские единицы, reorder
+- **P0**: Фазы 1-4 — довести приложение до доступного деплоя на VPS по IP без домена
+- **P1**: Фаза 5 — сделать эксплуатацию безопасной и воспроизводимой
+- **P2**: Фаза 6 — домен, HTTPS, CI/CD, мониторинг
+
+## Definition of Done для текущего этапа
+
+- [ ] Приложение доступно снаружи по IP-адресу VPS
+- [ ] Пользователь может зарегистрироваться и работать с задачами в production
+- [ ] Данные сохраняются между перезапусками контейнеров
+- [ ] Есть документированная инструкция по повторному деплою
+- [ ] Есть базовый backup и понятный rollback/update flow
