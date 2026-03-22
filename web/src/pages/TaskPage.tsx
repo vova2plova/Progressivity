@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { useTaskData, useTasksData } from '../hooks/useFeatureFlaggedData'
-import type { TaskStatus } from '../types'
+import { useTaskData } from '../hooks/useFeatureFlaggedData'
 import {
   ProgressBar,
   TaskTree,
@@ -18,13 +17,15 @@ export function TaskPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { task, isLoading, error } = useTaskData(id)
-  const { updateTask } = useTasksData()
   const { task: parentTask } = useTaskData(task?.parentId || undefined)
 
   const [createSubtaskOpen, setCreateSubtaskOpen] = useState(false)
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [addProgressOpen, setAddProgressOpen] = useState(false)
   const [editModalOpen, setEditModalOpen] = useState(false)
+
+  const formatStatus = (status: string) =>
+    status.replace('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())
 
   if (isLoading) {
     return (
@@ -102,18 +103,7 @@ export function TaskPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="text-gray-500 mb-1">Status</div>
-                <select
-                  className="w-full font-medium text-gray-900 bg-transparent border-none focus:ring-0 p-0"
-                  value={task.status}
-                  onChange={(e) => {
-                    updateTask(task.id, { status: e.target.value as TaskStatus })
-                  }}
-                >
-                  <option value="pending">Pending</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
+                <div className="font-medium text-gray-900">{formatStatus(task.status)}</div>
               </div>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="text-gray-500 mb-1">Type</div>
